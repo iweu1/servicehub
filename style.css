@@ -168,6 +168,95 @@ nav a:hover {
   font-size: 12px;
 }
 
+/* Цвета для статусов исполнителей */
+.status-verified {
+  background: var(--success);
+  color: #031016;
+  border-color: transparent;
+}
+.status-seller {
+  background: var(--info);
+  color: #031016;
+  border-color: transparent;
+}
+.status-recruiter {
+  background: var(--warning);
+  color: #031016;
+  border-color: transparent;
+}
+.status-unverified {
+  background: var(--text-muted);
+  color: var(--primary);
+  border-color: transparent;
+}
+.status-blocked {
+  background: var(--danger);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Стиль закрепленных карточек */
+.card.pinned {
+  border-width: 2px;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-2);
+}
+
+/* Иконка для закрепа */
+.pin-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 18px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+/* Галочка на аватаре для закрепа */
+.avatar {
+  position: relative;
+}
+.pinned-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  /* Отображаем SVG значок закрепа без фона; размеры задаются внутри img */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Анимация при наведении на карточку */
+.card {
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2);
+}
+
+/* Межстраничный баннер в каталоге */
+.mid-banner {
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--elev-1), var(--elev-2));
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-2);
+}
+.mid-banner .mid-banner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 /* Разметка двухколоночной сетки: фильтры слева, карточки справа */
 .grid {
   display: grid;
@@ -255,6 +344,7 @@ nav a:hover {
   box-shadow: var(--shadow-1);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .card-head {
@@ -289,6 +379,22 @@ nav a:hover {
 /* Детали карточки размещаются в отдельном блоке с малым шрифтом */
 .card-details p {
   margin: 2px 0;
+}
+
+/* Группа метаданных в карточке */
+.card-details .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 2px 0;
+}
+.card-details .meta span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.card-details .meta span b {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .notice {
@@ -386,12 +492,16 @@ footer {
   padding: 16px 18px;
 }
 
-.x {
+ .x {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--text);
   font-size: 20px;
   cursor: pointer;
+  transition: color .15s;
+}
+.x:hover {
+  color: var(--accent);
 }
 
 .row {

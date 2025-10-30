@@ -8,16 +8,20 @@ const LS = { users:'sd_users', session:'sd_session', sellers:'sd_sellers' };
 function read(key, def){ try{ const raw = localStorage.getItem(key); const v = raw==null? undefined : JSON.parse(raw); return v!==undefined? v: def; }catch(e){ return def; } }
 function write(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-// Справочник категорий с человекочитаемыми названиями
-const CAT_LABELS = {
-  design:'Дизайн',
-  programming:'Программирование',
-  marketing:'Маркетинг',
-  seo:'SEO',
-  content:'Копирайтинг',
-  support:'Поддержка'
-};
-function catLabel(v){ return CAT_LABELS[v] || v || '—'; }
+// Получить список категорий из настроек или из значений по умолчанию
+function getCategories(){
+  const st = getSettings();
+  if(st.categories && Array.isArray(st.categories) && st.categories.length){
+    return st.categories;
+  }
+  return DEFAULT_SETTINGS.categories;
+}
+// Получить читаемое имя категории
+function catLabel(v){
+  const cats = getCategories();
+  const found = cats.find(it => it.key === v);
+  return found ? found.label : (v || '—');
+}
 function statusLabel(v){ return ({verified:'Проверенный', seller:'Исполнитель', recruiter:'Рекрутер', unverified:'Не проверен', blocked:'Заблокирован'})[v] || 'Исполнитель'; }
 
 // Ключ для настроек и значения по умолчанию
@@ -45,7 +49,16 @@ const DEFAULT_SETTINGS = {
   guarantee: {
     title:'Безопасные сделки и честные исполнители',
     subtitle:'Мы поддерживаем безопасные платежи и прозрачные условия работы.'
-  }
+  },
+  // Категории по умолчанию. Каждая категория имеет ключ и отображаемое имя.
+  categories: [
+    {key:'design', label:'Дизайн'},
+    {key:'programming', label:'Программирование'},
+    {key:'marketing', label:'Маркетинг'},
+    {key:'seo', label:'SEO'},
+    {key:'content', label:'Копирайтинг'},
+    {key:'support', label:'Поддержка'}
+  ]
 };
 
 function getSettings(){
@@ -61,6 +74,10 @@ function getSettings(){
   }
   if(st.palette){ res.palette.accent = st.palette.accent||res.palette.accent; res.palette.accentDark = st.palette.accentDark||res.palette.accentDark; res.palette.accent2 = st.palette.accent2||res.palette.accent2; }
   if(st.guarantee){ res.guarantee.title = st.guarantee.title||res.guarantee.title; res.guarantee.subtitle = st.guarantee.subtitle||res.guarantee.subtitle; }
+  if(st.categories && Array.isArray(st.categories) && st.categories.length){
+    // копируем пользовательские категории, если они есть
+    res.categories = st.categories.map(c => ({key:c.key, label:c.label}));
+  }
   return res;
 }
 function saveSettings(s){ write(SETTINGS_KEY, s); }
@@ -197,41 +214,55 @@ function escapeHTML(s){ return (s+'').replace(/[&<>"]+/g, m=>({
 }[m])); }
 
 function cardHTML(s){
-  // отображаем аватар, имя, описание и один статус (без дополнительных флагов).
-  const ava = s.avatar ? `<img src="${escapeHTML(s.avatar)}" alt="">` : escapeHTML((s.name || '?')[0] || '?');
-  // Список форумов выводится без ссылок, названия через запятую
-  const forumsString = Array.isArray(s.forums) && s.forums.length ? s.forums.map(it => escapeHTML(it.title || '')).join(', ') : '—';
-  const tg = s.tg ? escapeHTML(s.tg) : '—';
-  const deposits = s.deposits ? escapeHTML(s.deposits) : '—';
-  const deals = Number(s.deals || 0);
-  return `<article class="card" data-profile="${s.id}">
-      <div class="card-head">
-        <div class="avatar">${ava}</div>
-        <div style="min-width:0">
-          <div style="font-weight:800">${escapeHTML(s.name)}</div>
-          <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(s.desc || '')}</div>
-          <div class="row" style="gap:6px;margin-top:6px">
-            <span class="chip">${escapeHTML(statusLabel(s.status))}</span>
+  // Показать закреп: определяем, закреплена ли карточка в данный момент
+  const now = Date.now();
+  const pinnedActive = s.pinnedUntil && new Date(s.pinnedUntil).getTime() > now;
+  // Формируем аватар; если закреплена, выводим зелёную галочку поверх
+  let avaInner;
+  if(s.avatar){
+    avaInner = `<img src="${escapeHTML(s.avatar)}" alt="">`;
+  } else {
+    avaInner = escapeHTML((s.name || '?')[0] || '?');
+  }
+  // Для закреплённых карточек отображаем значок галочки внутри звезды
+  const badge = pinnedActive ? `<span class="pinned-badge" title="Закреп на правах рекламы"><img src="assets/pinned-check.svg" alt="закреп" style="width:16px;height:16px"></span>` : '';
+  const ava = `<div class="avatar">${avaInner}${badge}</div>`;
+  // Список ресурсов выводится без ссылок, названия через запятую
+  // Сведения, используемые только для всплывающего профиля (но не отображаемые в списке)
+  const pinIcon = pinnedActive ? `<span class="pin-icon" title="Закреп на правах рекламы">📌</span>` : '';
+  const tgBtn = s.tg ? `<a class="btn btn-primary btn-tg" href="https://t.me/${escapeHTML(s.tg.replace(/^@/,''))}" target="_blank" rel="noopener" data-stop="1">Написать</a>` : '';
+  return `<article class="card${pinnedActive?' pinned':''}" data-profile="${s.id}">
+      ${pinIcon}
+      <div class="card-head" style="display:flex;align-items:center;gap:12px;justify-content:space-between">
+        ${ava}
+        <div class="card-main" style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div style="font-weight:800">${escapeHTML(s.name)}</div>
+            <span class="chip status-${escapeHTML(s.status)}">${escapeHTML(statusLabel(s.status))}</span>
           </div>
+          <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${escapeHTML(s.desc || '')}</div>
         </div>
-      </div>
-      <div class="card-details" style="padding:12px 16px;border-top:1px solid var(--border);font-size:12px" >
-        <p class="muted" style="margin:0">Категория: ${escapeHTML(catLabel(s.cat))}</p>
-        <p class="muted" style="margin:2px 0">Ник: ${escapeHTML(s.nick || '—')}</p>
-        <p class="muted" style="margin:2px 0">Опыт: ${deposits}</p>
-        <p class="muted" style="margin:2px 0">Проекты: ${deals}</p>
-        <p class="muted" style="margin:2px 0">Telegram: ${tg}</p>
-        <p class="muted" style="margin:2px 0">Ресурсы: ${forumsString}</p>
+        ${tgBtn}
       </div>
     </article>`;
 }
 
 function renderCards(){
-  const list = read(LS.sellers,[]).filter(s=>{
+  let list = read(LS.sellers,[]).filter(s=>{
     if(s.blocked) return false;
     const statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
     const catOk = currentFilter.cat==='all' || s.cat===currentFilter.cat;
     return statusOk && catOk;
+  });
+  // Сортировка: закрепленные карточки (с неистёкшим pinnedUntil) первыми, затем по дате создания (новые сверху)
+  const now = Date.now();
+  list = list.sort((a,b)=>{
+    const ap = a.pinnedUntil && new Date(a.pinnedUntil).getTime() > now ? 1 : 0;
+    const bp = b.pinnedUntil && new Date(b.pinnedUntil).getTime() > now ? 1 : 0;
+    if(bp !== ap) return bp - ap;
+    const da = a.created ? new Date(a.created).getTime() : 0;
+    const db = b.created ? new Date(b.created).getTime() : 0;
+    return db - da;
   });
   cardsWrap.innerHTML = list.map(cardHTML).join('');
   emptyHint.classList.toggle('hidden', list.length>0);
@@ -440,7 +471,10 @@ function fillAdminSellers(){
     const tgInput = document.createElement('input'); tgInput.className='field'; tgInput.placeholder='Поиск по TG'; tgInput.style.minWidth='140px'; tgInput.addEventListener('input',()=>{ sellerFilter.tg = tgInput.value.trim(); fillAdminSellers(); });
     filtWrap.appendChild(tgInput);
     const catSel = document.createElement('select'); catSel.className='select';
-    catSel.innerHTML = `<option value="all">Все категории</option>` + Object.keys(CAT_LABELS).map(k=>`<option value="${k}">${escapeHTML(catLabel(k))}</option>`).join('');
+    {
+      const cats = getCategories();
+      catSel.innerHTML = `<option value="all">Все категории</option>` + cats.map(c=>`<option value="${escapeHTML(c.key)}">${escapeHTML(c.label)}</option>`).join('');
+    }
     catSel.addEventListener('change',()=>{ sellerFilter.cat = catSel.value; fillAdminSellers(); });
     filtWrap.appendChild(catSel);
     const statSel = document.createElement('select'); statSel.className='select';
@@ -473,7 +507,10 @@ function fillAdminSellers(){
     bulkWrap.appendChild(bulkStatSel);
     bulkWrap.appendChild(bulkStatBtn);
     const bulkCatSel = document.createElement('select'); bulkCatSel.className='select';
-    bulkCatSel.innerHTML = `<option value="">— изменить категорию —</option>` + Object.keys(CAT_LABELS).map(k=>`<option value="${k}">${escapeHTML(catLabel(k))}</option>`).join('');
+    {
+      const cats = getCategories();
+      bulkCatSel.innerHTML = `<option value="">— изменить категорию —</option>` + cats.map(c=>`<option value="${escapeHTML(c.key)}">${escapeHTML(c.label)}</option>`).join('');
+    }
     const bulkCatBtn = document.createElement('button'); bulkCatBtn.className='btn'; bulkCatBtn.textContent='Применить категорию';
     bulkCatBtn.addEventListener('click',()=>{
       const val = bulkCatSel.value;
@@ -535,6 +572,7 @@ function fillAdminSellers(){
           <button class="btn" data-edit-seller="${item.id}">Редактировать</button>
           <button class="btn btn-danger" data-del-seller="${item.id}">Удалить</button>
           <button class="btn" data-block-seller="${item.id}">${item.blocked? 'Разблокировать' : 'Блокировать'}</button>
+          <button class="btn" data-pin-seller="${item.id}">${(item.pinnedUntil && new Date(item.pinnedUntil).getTime() > Date.now()) ? 'Снять закреп' : 'Закрепить'}</button>
         </td>
       </tr>`;
   }).join('');
@@ -570,6 +608,20 @@ function fillAdminSellers(){
     const arr = read(LS.sellers,[]);
     const item = arr.find(x=> x.id===idd);
     if(item){ item.blocked = !item.blocked; write(LS.sellers,arr); }
+    fillAdminSellers(); renderCards();
+  }));
+  // обработка закрепления/снятия закрепа
+  tbody.querySelectorAll('[data-pin-seller]').forEach(btn=> btn.addEventListener('click',()=>{
+    const idd = +btn.getAttribute('data-pin-seller');
+    const arr = read(LS.sellers,[]);
+    const item = arr.find(x=> x.id===idd);
+    if(item){
+      const now = Date.now();
+      const active = item.pinnedUntil && new Date(item.pinnedUntil).getTime() > now;
+      if(active){ delete item.pinnedUntil; }
+      else { item.pinnedUntil = new Date(now + 30*24*60*60*1000).toISOString(); }
+      write(LS.sellers,arr);
+    }
     fillAdminSellers(); renderCards();
   }));
   tbody.querySelectorAll('.sel-status').forEach(sel=> sel.addEventListener('change',()=>{
@@ -636,6 +688,49 @@ function fillAdminUsers(){
     write(LS.users,arr);
     fillAdminUsers();
   }));
+}
+
+// Обновить UI категорий после их изменения
+function updateCategoriesUI(){
+  const cats = getCategories();
+  // обновляем боковое меню категорий
+  const catUl = document.getElementById('cats');
+  if(catUl){
+    // запомнить выбранную категорию
+    const selectedCat = currentFilter.cat;
+    catUl.innerHTML = '';
+    const makeLi = (val,label)=>{
+      const li = document.createElement('li');
+      li.dataset.cat = val;
+      li.textContent = label;
+      if(selectedCat === val) li.classList.add('active');
+      li.addEventListener('click',()=>{
+        document.querySelectorAll('#cats li').forEach(x=> x.classList.remove('active'));
+        li.classList.add('active');
+        currentFilter.cat = li.dataset.cat;
+        renderCards();
+      });
+      return li;
+    };
+    catUl.appendChild(makeLi('all','Все категории'));
+    cats.forEach(catObj=>{
+      catUl.appendChild(makeLi(catObj.key, catObj.label));
+    });
+  }
+  // обновляем селектор категории в форме создания карточки
+  const catSelect = document.getElementById('c-cat');
+  if(catSelect){
+    catSelect.innerHTML = cats.map(c=>`<option value="${escapeHTML(c.key)}">${escapeHTML(c.label)}</option>`).join('');
+    // если текущий фильтр не существует, выбираем первую категорию
+    catSelect.value = cats[0] ? cats[0].key : '';
+  }
+  // Обновляем селекторы категорий в админ фильтре и массовых действиях через повторную инициализацию
+  const filtWrap = document.getElementById('seller-filters');
+  if(filtWrap){ delete filtWrap.dataset.init; }
+  const bulkWrap = document.getElementById('seller-bulk-actions');
+  if(bulkWrap){ delete bulkWrap.dataset.init; }
+  fillAdminSellers();
+  renderCards();
 }
 
 function fillAdminSettings(){
@@ -733,9 +828,81 @@ function fillAdminSettings(){
       alert('Импортировано');
     }catch(e){ alert('Некорректный JSON'); }
   }); }
+
+  // управление категориями
+  const catListEl = document.getElementById('cat-list');
+  const addCatBtn = document.getElementById('add-cat');
+  const saveCatBtn = document.getElementById('save-cat');
+  // Helper: отобразить текущие категории в форме
+  function renderCatList(){
+    if(!catListEl) return;
+    catListEl.innerHTML = '';
+    const cats = getCategories();
+    cats.forEach((c, idx)=>{
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.gap = '6px';
+      row.style.alignItems = 'center';
+      const keyInput = document.createElement('input'); keyInput.className='field'; keyInput.placeholder='Ключ'; keyInput.style.minWidth='120px'; keyInput.value = c.key;
+      const labelInput = document.createElement('input'); labelInput.className='field'; labelInput.placeholder='Название'; labelInput.style.minWidth='160px'; labelInput.value = c.label;
+      const rmBtn = document.createElement('button'); rmBtn.className='btn rm'; rmBtn.textContent='✕';
+      rmBtn.addEventListener('click',()=>{ row.remove(); });
+      row.appendChild(keyInput);
+      row.appendChild(labelInput);
+      row.appendChild(rmBtn);
+      catListEl.appendChild(row);
+    });
+  }
+  // Инициализировать форму категорий один раз
+  if(catListEl && !catListEl.dataset.init){
+    catListEl.dataset.init = '1';
+    renderCatList();
+  }
+  if(addCatBtn && !addCatBtn.dataset.bound){
+    addCatBtn.dataset.bound = '1';
+    addCatBtn.addEventListener('click',()=>{
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.gap = '6px';
+      row.style.alignItems = 'center';
+      const keyInput = document.createElement('input'); keyInput.className='field'; keyInput.placeholder='Ключ'; keyInput.style.minWidth='120px';
+      const labelInput = document.createElement('input'); labelInput.className='field'; labelInput.placeholder='Название'; labelInput.style.minWidth='160px';
+      const rmBtn = document.createElement('button'); rmBtn.className='btn rm'; rmBtn.textContent='✕'; rmBtn.addEventListener('click',()=>{ row.remove(); });
+      row.appendChild(keyInput);
+      row.appendChild(labelInput);
+      row.appendChild(rmBtn);
+      catListEl.appendChild(row);
+    });
+  }
+  if(saveCatBtn && !saveCatBtn.dataset.bound){
+    saveCatBtn.dataset.bound = '1';
+    saveCatBtn.addEventListener('click',()=>{
+      const rows = Array.from(catListEl.querySelectorAll('.row'));
+      const newCats = [];
+      rows.forEach(r=>{
+        const k = r.querySelector('input.field:nth-child(1)').value.trim();
+        const l = r.querySelector('input.field:nth-child(2)').value.trim();
+        if(k && l) newCats.push({key:k, label:l});
+      });
+      const st2 = getSettings();
+      st2.categories = newCats;
+      saveSettings(st2);
+      // обновляем категории на сайте
+      updateCategoriesUI();
+      alert('Категории сохранены');
+    });
+  }
 }
 
-document.addEventListener('click',(e)=>{ const btn = e.target.closest('[data-profile]'); if(btn){ openSeller(+btn.getAttribute('data-profile')); } });
+// Глобальный слушатель кликов для открытия профиля продавца.
+// Если клик происходит на кнопке/ссылке внутри карточки с атрибутом data-stop,
+// то не открываем профиль.
+document.addEventListener('click',(e)=>{
+  // Если кликнули на элемент, помеченный как стоп, игнорируем
+  if(e.target.closest('[data-stop]')) return;
+  const cardEl = e.target.closest('[data-profile]');
+  if(cardEl){ openSeller(+cardEl.getAttribute('data-profile')); }
+});
 function openSeller(id){
   const s = read(LS.sellers,[]).find(x=>x.id===id); if(!s) return;
   const m = document.createElement('div'); m.className='modal open';
@@ -759,6 +926,7 @@ function openSeller(id){
             <div class='row' style='gap:8px'>${chips}</div>
             <p class='muted' style='margin-top:8px'>Ник: ${escapeHTML(s.nick||'—')} • Опыт: ${escapeHTML(s.deposits||'—')} • Проекты: ${Number(s.deals||0)} • TG: ${s.tg? escapeHTML(s.tg) : '—'}</p>
             ${forumList}
+            ${s.tg ? `<div style='margin-top:12px'><a class="btn btn-primary" href="https://t.me/${escapeHTML(String(s.tg).replace(/^@/,''))}" target="_blank" rel="noopener">Написать в Telegram</a></div>` : ''}
           </div>
         </div>
       </div>
@@ -772,6 +940,8 @@ document.querySelectorAll('.modal').forEach(m=> m.addEventListener('click',e=>{ 
 syncAuth();
 // Применяем пользовательские настройки (цветовая палитра, баннеры, бегущая строка и т.д.)
 applySettings();
+// Обновляем категории и связанные элементы после применения настроек
+updateCategoriesUI();
 
 // Получение количества подписчиков Telegram канала через Jina.ai (анонимный парсер)
 (function(){
@@ -813,20 +983,44 @@ applySettings();
 (function(){
   const homeSection = document.getElementById('home-section');
   const adsSection  = document.getElementById('ads-section');
+  const howSection  = document.getElementById('how-section');
   const navHome = document.getElementById('nav-home');
   const navAds  = document.getElementById('nav-ads');
+  const navHow  = document.getElementById('nav-how');
   function showHome(){
     if(homeSection) homeSection.classList.remove('hidden');
     if(adsSection)  adsSection.classList.add('hidden');
+    if(howSection) howSection.classList.add('hidden');
     document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
     if(navHome) navHome.classList.add('active');
+    // Закрываем любые открытые модальные окна при смене раздела
+    document.querySelectorAll('.modal.open').forEach(m=> closeModal(m));
   }
   function showAds(){
     if(homeSection) homeSection.classList.add('hidden');
     if(adsSection)  adsSection.classList.remove('hidden');
+    if(howSection) howSection.classList.add('hidden');
     document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
     if(navAds) navAds.classList.add('active');
+    // Закрываем открытые модальные окна при переходе
+    document.querySelectorAll('.modal.open').forEach(m=> closeModal(m));
+  }
+  function showHow(){
+    if(homeSection) homeSection.classList.add('hidden');
+    if(adsSection)  adsSection.classList.add('hidden');
+    if(howSection) howSection.classList.remove('hidden');
+    document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
+    if(navHow) navHow.classList.add('active');
+    // Закрываем открытые модальные окна при переходе
+    document.querySelectorAll('.modal.open').forEach(m=> closeModal(m));
   }
   if(navHome) navHome.addEventListener('click', (e)=>{ e.preventDefault(); showHome(); });
   if(navAds) navAds.addEventListener('click', (e)=>{ e.preventDefault(); showAds(); });
+  if(navHow) navHow.addEventListener('click', (e)=>{ e.preventDefault(); showHow(); });
+  // клик по логотипу возвращает на главную
+  const logoEl = document.querySelector('.logo');
+  if(logoEl){
+    logoEl.style.cursor = 'pointer';
+    logoEl.addEventListener('click',(e)=>{ e.preventDefault(); showHome(); });
+  }
 })();
