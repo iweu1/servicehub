@@ -4,151 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ServiceHub • Легальный маркетплейс услуг</title>
-  <!--
-    Этот файл представляет собой переработанную версию исходного шаблона,
-    адаптированную под белый (светлый) дизайн и легальные категории услуг.
-    Никакой нелегальной деятельности здесь нет: категории и примеры продавцов
-    соответствуют широкому спектру легальных сервисов, включая дизайн,
-    программирование, маркетинг и поддержку. Цветовая схема была светлой для
-    улучшения читаемости и ощущения чистоты интерфейса.
-  -->
-  <style>
-  :root {
-    /* Тёмная палитра */
-    --primary:#0a0a0a; --secondary:#121212; --tertiary:#1b1b1b; --card-bg:#141414;
-    --elev-1:#161616; --elev-2:#1e1e1e; --elev-3:#242424;
-    --text:#e8e8e8; --text-muted:#a2a2a2; --muted-2:#858585;
-    --accent:#2563eb; --accent-2:#3b82f6; --accent-dark:#1d4ed8;
-    --danger:#ef4444; --warning:#f59e0b; --info:#3b82f6; --success:#10b981;
-    --border:#2a2a2a; --ring:#3b82f6; --ring-soft:rgba(59,130,246,.25);
-    --header-h:64px; --radius:14px;
-    --shadow-1:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.35);
-    --shadow-2:0 6px 20px rgba(0,0,0,.45);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--primary);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;line-height:1.6}
-  .container{max-width:1200px;margin:0 auto;padding:0 16px}
-  a{color:var(--accent-dark);text-decoration:none}
-  :focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring-soft)}
-
-  /*
-   * Верхний заголовок должен быть выдержан в тёмной гамме, чтобы дизайн был цельным.
-   * Заменяем белый градиент на тёмный, как и прочие элементы интерфейса.
-   */
-  header{position:sticky;top:0;z-index:50;height:var(--header-h);backdrop-filter:saturate(1.2) blur(6px);background:linear-gradient(180deg, rgba(18,18,18,.9), rgba(18,18,18,.65));border-bottom:1px solid var(--border)}
-  .header-content{display:flex;align-items:center;justify-content:space-between;height:100%}
-  .logo{display:flex;align-items:center;gap:10px;color:var(--accent);font-weight:800}
-  nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
-  nav a{color:var(--text-muted);padding:10px 8px;border-radius:10px}
-  nav a.active, nav a:hover{color:var(--text)}
-  .auth{display:flex;gap:8px;align-items:center}
-  .btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--border);background:var(--elev-1);color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700}
-  .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-dark));color:#fff;border-color:transparent;box-shadow:var(--shadow-1)}
-  .btn-danger{background:linear-gradient(180deg,#ef4444,#dc2626);color:#fff;border-color:transparent}
-  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--elev-1);padding:6px 10px;border-radius:999px;color:var(--text);font-size:12px}
-
-  .grid{display:grid;grid-template-columns:280px 1fr;gap:24px}
-  .sidebar{background:linear-gradient(180deg,var(--elev-1),var(--elev-2));border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:sticky;top:calc(var(--header-h) + 12px);height:max-content}
-  .sidebar h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
-  .toggle{border:1px solid var(--border);background:var(--elev-1);color:var(--text-muted);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px}
-  .list-plain{list-style:none;margin:0;padding:0}
-  .list-plain li{padding:10px;border-radius:10px;border:1px solid transparent;cursor:pointer}
-  .list-plain li:hover{background:var(--elev-1);border-color:var(--border)}
-  .list-plain li.active{color:var(--accent-2);background:linear-gradient(0deg, rgba(147,197,253,.15), transparent);border-color:rgba(147,197,253,.35)}
-
-  .link-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--elev-1);padding:6px 10px;border-radius:999px;font-size:12px}
-  .forum-row{display:grid;grid-template-columns:1fr 1.2fr auto;gap:8px;align-items:center}
-  .forum-row .field{width:100%}
-  .forum-row .rm{min-width:40px}
-
-  .content{min-width:0}
-  .section-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0}
-  .cards{display:flex;flex-direction:column;gap:12px}
-
-  .card{width:100%;background:linear-gradient(180deg,var(--card-bg),var(--elev-1));border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-1);display:grid;grid-template-columns:1fr auto;grid-auto-rows:auto}
-  .card-head{grid-column:1;display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border)}
-  .avatar{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;border:2px solid rgba(147,197,253,.35);background:radial-gradient(circle at 30% 30%, rgba(147,197,253,.25), transparent 60%), var(--tertiary);overflow:hidden}
-  .avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
-  .card-foot{grid-column:2;align-self:center;padding:14px 16px;display:flex;gap:8px;justify-content:flex-end;align-items:center}
-
-  .notice{margin:16px 0;padding:10px 12px;border:1px dashed var(--border);border-radius:12px;color:var(--text-muted)}
-
-  .ticker{margin-top:16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(0deg,var(--elev-1),var(--elev-2));overflow:hidden}
-  .ticker-track{display:flex;gap:36px;padding:10px 12px;white-space:nowrap;animation:scroll var(--t,28s) linear infinite}
-  .ticker:hover .ticker-track{animation-play-state:paused}
-  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-  footer{margin-top:40px}
-  .cta{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--border);background:var(--elev-2);border-radius:14px;padding:16px}
-  .count{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--elev-1);border-radius:12px;padding:8px 12px;font-weight:700}
-
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px}
-  .modal.open{display:flex}
-  .panel{width:min(720px,100%);background:linear-gradient(180deg,var(--elev-2),var(--elev-1));border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-2)}
-  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border)}
-  .panel-body{padding:16px 18px}
-  .x{background:transparent;border:none;color:var(--text-muted);font-size:20px;cursor:pointer}
-
-  .row{display:flex;gap:10px;align-items:center}
-  .col{display:flex;flex-direction:column;gap:8px}
-  .field{background:var(--tertiary);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text)}
-  .select{background:var(--tertiary);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text)}
-  .muted{color:var(--text-muted)}
-  .table{width:100%;border-collapse:separate;border-spacing:0}
-  .table th,.table td{border-bottom:1px solid var(--border);padding:10px;text-align:left}
-  .table th{color:var(--text-muted);font-weight:600}
-
-  .tabs{display:flex;gap:8px;margin-bottom:12px}
-  .tab{background:var(--elev-1);border:1px solid var(--border);color:var(--text-muted);padding:8px 12px;border-radius:999px;cursor:pointer}
-  .tab.active{background:var(--accent);color:#fff;border-color:transparent}
-
-  .badge{display:inline-flex;gap:6px;align-items:center;background:var(--elev-1);border:1px solid var(--border);border-radius:999px;padding:4px 10px;font-size:12px}
-  .ok{color:#34d399}.warn{color:#fbbf24}.err{color:#f87171}
-
-  .hidden{display:none}
-  .notification{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(180deg,#fde68a,#f59e0b);color:#111827;border:none;border-radius:14px;box-shadow:var(--shadow-1);font-weight:700;margin-top:16px}
-  .header-banners{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-  .banner-slot{display:flex;align-items:center;justify-content:center;min-height:120px;background:var(--elev-1);border:1px dashed var(--border);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03);color:var(--muted-2)}
-  .guarantee{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;border-radius:16px;padding:18px 20px;border:1px solid var(--border);background:var(--elev-2);box-shadow:var(--shadow-1);position:relative;overflow:hidden;margin-top:16px}
-  .guarantee::before{content:"";position:absolute;left:-80px;top:-40px;width:240px;height:180px;border-radius:50%;background:radial-gradient(100px 100px at 55% 55%, rgba(147,197,253,.12), rgba(147,197,253,0) 70%);pointer-events:none}
-  .g-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:220px}
-  .search-section{border-radius:16px;border:1px solid var(--border);background:var(--elev-1);box-shadow:var(--shadow-1);padding:12px;margin-top:16px}
-  .search-row{display:flex;gap:12px}
-  .search-row .field{flex:1}
-.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px;align-items:stretch;grid-auto-rows:1fr}
-.info-card{border:1px solid var(--border);background:linear-gradient(0deg,var(--elev-2),var(--elev-1));border-radius:12px;padding:12px 14px 8px;display:flex;flex-direction:column;height:100%}
-  .info-head{display:flex;align-items:center;gap:10px;border:1px solid var(--border);background:var(--elev-1);border-radius:8px;padding:10px;font-weight:700;color:var(--text-muted);margin-bottom:12px}
-  .info-body{border:1px solid var(--border);background:var(--elev-1);border-radius:8px;padding:10px 12px 8px;display:flex;flex-direction:column;gap:12px;min-height:0}
-  .list-clean{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  .onion-wrap{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-  .onion-field{display:block;min-width:0;border:1px dashed var(--border);background:var(--tertiary);border-radius:8px;padding:12px;color:var(--text-muted);white-space:nowrap;overflow-x:auto;overflow-y:hidden;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:14px}
-  .onion-field{scrollbar-width:thin;scrollbar-color:var(--accent-2) var(--elev-2)}
-  .onion-field::-webkit-scrollbar{height:8px}
-  .onion-field::-webkit-scrollbar-track{background:var(--elev-2);border-radius:999px}
-  .onion-field::-webkit-scrollbar-thumb{background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:999px;border:2px solid var(--elev-2)}
-  .onion-field:hover::-webkit-scrollbar-thumb{background:var(--accent-2)}
-  .onion-field::-webkit-scrollbar-button{width:0;height:0;display:none}
-  .partners{margin-top:16px;border:1px solid var(--border);background:linear-gradient(0deg,var(--elev-2),var(--elev-1));border-radius:12px;padding:16px}
-  .partners h3{margin:0 0 12px;text-align:center}
-  .partners-slider{overflow:hidden;position:relative;border-radius:10px}
-  .slider-track{display:flex;gap:16px;will-change:transform}
-  .partner-logo{flex:0 0 220px;height:84px;border-radius:10px;background:var(--elev-1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800}
-
-  .info-body p{margin:0}
-  .info-body > *:last-child{margin-bottom:0}
-  .onion-wrap + p{margin-top:8px}
-
-  @media (max-width:992px){.grid{grid-template-columns:1fr}.sidebar{position:static}}
-  @media (max-width:640px){.header-banners{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.card{grid-template-columns:1fr;grid-template-rows:auto auto auto}.card-foot{grid-column:1;grid-row:3;justify-content:flex-start;padding-top:0}}
-  </style>
+  <!-- Подключаем внешний файл стилей, чтобы отделить CSS от HTML -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <div class="container header-content">
-      <div class="logo"><span>✨</span><span id="brand">ServiceHub</span></div>
+      <div class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="assets/logo.svg" alt="ServiceHub logo" style="width:36px;height:36px" />
+        <span id="brand">ServiceHub</span>
+      </div>
       <nav>
         <ul>
-          <li><a href="#home" class="nav-link active">Главная</a></li>
+          <li><a href="#home" class="nav-link active" id="nav-home">Главная</a></li>
+          <li><a href="#ads" class="nav-link" id="nav-ads">Реклама</a></li>
           <li><a href="#admin" class="nav-link" id="nav-admin" hidden>Админ‑панель</a></li>
         </ul>
       </nav>
@@ -164,146 +33,176 @@
   </header>
 
   <main class="container">
-    <div class="notification" role="status" style="margin-top:16px">
-      <span>ℹ️ Покупайте услуги только у проверенных продавцов и читайте отзывы.</span>
-      <button class="x" aria-label="Закрыть" onclick="this.closest('.notification').remove()">×</button>
-    </div>
-
-    <div class="ticker" style="margin-top:12px">
-      <div class="ticker-track" id="ticker">
-        <span>✅ 20 новых исполнителей добавлено за неделю</span>
-        <span>⭐ Мы поддерживаем честные отзывы</span>
-        <span>🚀 Начни сотрудничество уже сегодня</span>
-        <span>✅ 20 новых исполнителей добавлено за неделю</span>
-        <span>⭐ Мы поддерживаем честные отзывы</span>
-        <span>🚀 Начни сотрудничество уже сегодня</span>
+    <!-- домашняя страница -->
+    <section id="home-section">
+      <div class="notification" role="status" style="margin-top:16px">
+        <span>ℹ️ Покупайте услуги только у проверенных исполнителей и читайте отзывы.</span>
+        <button class="x" aria-label="Закрыть" onclick="this.closest('.notification').remove()">×</button>
       </div>
-    </div>
 
-    <div class="header-banners">
-      <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
-      <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
-    </div>
-
-    <section class="guarantee" aria-label="Гарантии и безопасность">
-      <div>
-        <h3 style="margin:0 0 6px">Безопасные сделки и честные исполнители</h3>
-        <p class="muted" style="margin:0">Мы поддерживаем безопасные платежи и прозрачные условия работы.</p>
-        <div class="row" style="gap:8px;margin-top:10px">
-          <span class="chip">🔒 Защита</span>
-          <span class="chip">⚡ Быстрые выплаты</span>
-          <span class="chip">🧾 Прозрачные комиссии</span>
-        </div>
+      <div class="ticker" style="margin-top:12px">
+        <div class="ticker-track" id="ticker"></div>
       </div>
-      <div class="g-actions">
-        <button class="btn btn-primary">Как это работает →</button>
-        <button class="btn">Подробнее</button>
+
+      <div class="header-banners">
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
       </div>
-    </section>
 
-    <section class="search-section" aria-label="Поиск">
-      <div class="search-row">
-        <input class="field" type="search" placeholder="Поиск исполнителей, услуг, категорий…" aria-label="Поиск" />
-        <button class="btn">Фильтры</button>
-        <button class="btn btn-primary">Найти</button>
-      </div>
-    </section>
-
-    <div class="grid" style="margin-top:16px">
-      <aside class="sidebar">
-        <h3>Статусы <button class="toggle" data-toggle="#flt">Скрыть</button></h3>
-        <ul id="flt" class="list-plain">
-          <li data-status="all" class="active">Все исполнители</li>
-          <li data-status="verified">Проверенный</li>
-          <li data-status="seller">Исполнитель</li>
-          <li data-status="recruiter">Рекрутер</li>
-          <li data-status="unverified">Не проверен</li>
-        </ul>
-        <h3>Категории <button class="toggle" data-toggle="#cats">Скрыть</button></h3>
-        <ul id="cats" class="list-plain">
-          <li data-cat="all" class="active">Все категории</li>
-          <li data-cat="design">Дизайн</li>
-          <li data-cat="programming">Программирование</li>
-          <li data-cat="marketing">Маркетинг</li>
-          <li data-cat="seo">SEO</li>
-          <li data-cat="content">Копирайтинг</li>
-          <li data-cat="support">Поддержка</li>
-        </ul>
-      </aside>
-
-      <section class="content">
-        <div class="section-head">
-          <h2 style="margin:0">Список исполнителей</h2>
-          <div>
-            <button class="btn btn-primary" id="btn-add-card"><span>＋</span> Добавить карточку</button>
-          </div>
-        </div>
-        <div id="cards" class="cards"></div>
-        <div id="empty" class="notice hidden">Пока нет карточек. Нажмите «Добавить карточку».</div>
-      </section>
-    </div>
-
-    <footer style="margin-top:28px">
-      <div class="cta">
+      <section class="guarantee" aria-label="Гарантии и безопасность">
         <div>
-          <div style="font-weight:800">Присоединяйтесь к нашему каналу</div>
-          <div class="muted">Следите за новостями и обновлениями</div>
+          <h3 style="margin:0 0 6px">Безопасные сделки и честные исполнители</h3>
+          <p class="muted" style="margin:0">Мы поддерживаем безопасные платежи и прозрачные условия работы.</p>
+          <div class="row" style="gap:8px;margin-top:10px">
+            <span class="chip">🔒 Защита</span>
+            <span class="chip">⚡ Быстрые выплаты</span>
+            <span class="chip">🧾 Прозрачные комиссии</span>
+          </div>
         </div>
-        <div class="count"><span>👥 Подписалось:</span> <b id="tg-count" class="muted">—</b></div>
-        <a class="btn" href="https://t.me/OwnershipDesign" target="_blank" rel="noopener">Подписаться</a>
-      </div>
-
-      <div class="info-grid">
-        <section class="info-card" aria-label="Информация">
-          <div class="info-head">ℹ️ О проекте</div>
-          <div class="info-body">
-            <p>ServiceHub — это платформа для поиска и размещения легальных услуг.</p>
-            <p>Мы выступаем за честное сотрудничество и прозрачность.</p>
-          </div>
-        </section>
-
-        <section class="info-card" aria-label="Наш сайт">
-          <div class="info-head">🌐 Наши сайты</div>
-          <div class="info-body">
-            <ul class="list-clean">
-              <li>🔗 <a href="https://servicehub.example" target="_blank" rel="noopener">ServiceHub.example</a></li>
-              <li>🔗 <a href="https://servicehub.net" target="_blank" rel="noopener">ServiceHub.net</a></li>
-              <li>🔗 <a href="https://servicehub.org" target="_blank" rel="noopener">ServiceHub.org</a></li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="info-card" aria-label="Ресурсы в Telegram">
-          <div class="info-head">✈️ Ресурсы в Telegram</div>
-          <div class="info-body">
-            <ul class="list-clean">
-              <li>✈️ <a href="https://t.me/servicehub_bot" target="_blank" rel="noopener">@servicehub_bot</a></li>
-              <li>✈️ <a href="https://t.me/servicehub_news" target="_blank" rel="noopener">@servicehub_news</a></li>
-              <li>✈️ <a href="https://t.me/servicehub_support" target="_blank" rel="noopener">@servicehub_support</a></li>
-            </ul>
-          </div>
-        </section>
-      </div>
-
-      <section class="partners">
-        <h3>Наши партнёры</h3>
-        <div class="partners-slider" role="region" aria-label="Логотипы партнёров, автопрокрутка">
-          <div class="slider-track" id="partners-track">
-            <div class="partner-logo">DesignPro</div>
-            <div class="partner-logo">CodeCraft</div>
-            <div class="partner-logo">MarketGuru</div>
-            <div class="partner-logo">SEOExpert</div>
-            <div class="partner-logo">SupportPlus</div>
-          </div>
+        <div class="g-actions">
+          <!-- Единственная видимая кнопка: подробнее -->
+          <button class="btn btn-primary">Подробнее</button>
         </div>
       </section>
-    </footer>
+
+      <section class="search-section" aria-label="Поиск">
+        <div class="search-row">
+          <input class="field" type="search" placeholder="Поиск исполнителей, услуг, категорий…" aria-label="Поиск" />
+          <button class="btn">Фильтры</button>
+          <button class="btn btn-primary">Найти</button>
+        </div>
+      </section>
+
+      <div class="grid" style="margin-top:16px">
+        <aside class="sidebar">
+          <h3>Статусы <button class="toggle" data-toggle="#flt">Скрыть</button></h3>
+          <ul id="flt" class="list-plain">
+            <li data-status="all" class="active">Все исполнители</li>
+            <li data-status="verified">Проверенный</li>
+            <li data-status="seller">Исполнитель</li>
+            <li data-status="recruiter">Рекрутер</li>
+            <li data-status="unverified">Не проверен</li>
+          </ul>
+          <h3>Категории <button class="toggle" data-toggle="#cats">Скрыть</button></h3>
+          <ul id="cats" class="list-plain">
+            <li data-cat="all" class="active">Все категории</li>
+            <li data-cat="design">Дизайн</li>
+            <li data-cat="programming">Программирование</li>
+            <li data-cat="marketing">Маркетинг</li>
+            <li data-cat="seo">SEO</li>
+            <li data-cat="content">Копирайтинг</li>
+            <li data-cat="support">Поддержка</li>
+          </ul>
+        </aside>
+
+        <section class="content">
+          <div class="section-head">
+            <h2 style="margin:0">Список исполнителей</h2>
+            <div>
+              <button class="btn btn-primary" id="btn-add-card"><span>＋</span> Добавить карточку</button>
+            </div>
+          </div>
+          <div id="cards" class="cards"></div>
+          <div id="empty" class="notice hidden">Пока нет карточек. Нажмите «Добавить карточку».</div>
+        </section>
+      </div>
+
+      <footer style="margin-top:28px">
+        <div class="cta">
+          <div>
+            <div style="font-weight:800">Присоединяйтесь к нашему каналу</div>
+            <div class="muted">Следите за новостями и обновлениями</div>
+          </div>
+          <div class="count"><span>👥 Подписалось:</span> <b id="tg-count" class="muted">—</b></div>
+          <a class="btn" href="https://t.me/OwnershipDesign" target="_blank" rel="noopener">Подписаться</a>
+        </div>
+
+        <div class="info-grid">
+          <section class="info-card" aria-label="Информация">
+            <div class="info-head">ℹ️ О проекте</div>
+            <div class="info-body">
+              <!-- Текст о проекте убран по требованию. Карточка выравнивается по высоте с другими. -->
+            </div>
+          </section>
+
+          <section class="info-card" aria-label="Наш сайт">
+            <div class="info-head">🌐 Наши сайты</div>
+            <div class="info-body">
+              <ul class="list-clean">
+                <li>🔗 <a href="https://servicehub.example" target="_blank" rel="noopener">ServiceHub.example</a></li>
+                <li>🔗 <a href="https://servicehub.net" target="_blank" rel="noopener">ServiceHub.net</a></li>
+                <li>🔗 <a href="https://servicehub.org" target="_blank" rel="noopener">ServiceHub.org</a></li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="info-card" aria-label="Ресурсы в Telegram">
+            <div class="info-head">✈️ Ресурсы в Telegram</div>
+            <div class="info-body">
+              <ul class="list-clean">
+                <li>✈️ <a href="https://t.me/servicehub_bot" target="_blank" rel="noopener">@servicehub_bot</a></li>
+                <li>✈️ <a href="https://t.me/servicehub_news" target="_blank" rel="noopener">@servicehub_news</a></li>
+                <li>✈️ <a href="https://t.me/servicehub_support" target="_blank" rel="noopener">@servicehub_support</a></li>
+              </ul>
+            </div>
+          </section>
+        </div>
+
+        <section class="partners">
+          <h3>Наши партнёры</h3>
+          <div class="partners-slider" role="region" aria-label="Логотипы партнёров, автопрокрутка">
+            <div class="slider-track" id="partners-track">
+              <div class="partner-logo">DesignPro</div>
+              <div class="partner-logo">CodeCraft</div>
+              <div class="partner-logo">MarketGuru</div>
+              <div class="partner-logo">SEOExpert</div>
+              <div class="partner-logo">SupportPlus</div>
+            </div>
+          </div>
+        </section>
+      </footer>
+    </section><!-- end home-section -->
+
+    <!-- рекламная страница -->
+    <section id="ads-section" class="hidden" style="padding-top:24px">
+      <h2 style="margin:0 0 12px">Реклама</h2>
+      <div class="info-grid">
+        <section class="info-card">
+          <div class="info-head">🏅 Покупка статуса</div>
+          <div class="info-body">
+            <p>Получите статус «Проверенный» или «Рекрутер»</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">📌 Закреп строчки продавца</div>
+          <div class="info-body">
+            <p>Ваша карточка всегда сверху</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">🖼️ Покупка баннера в шапке</div>
+          <div class="info-body">
+            <p>Реклама в заголовке каталога</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">📢 Покупка бегущей строки</div>
+          <div class="info-body">
+            <p>Ваш текст увидят все</p>
+          </div>
+        </section>
+      </div>
+    </section>
   </main>
 
+  <!-- Модальные окна -->
   <div class="modal" id="auth-modal">
     <div class="panel">
       <div class="panel-head"><b id="auth-title">Вход</b><button class="x" data-close>×</button></div>
       <div class="panel-body">
+        <div style="text-align:center;margin-bottom:12px">
+          <img src="assets/logo.svg" alt="ServiceHub logo" style="width:48px;height:48px" />
+        </div>
         <div class="tabs">
           <button class="tab active" data-auth-tab="login">Вход</button>
           <button class="tab" data-auth-tab="register">Регистрация</button>
@@ -398,7 +297,7 @@
           <button class="tab" data-admin-tab="users">Пользователи</button>
           <button class="tab" data-admin-tab="settings">Настройки</button>
         </div>
-        <!-- Панель управления продавцами (исполнителями) -->
+        <!-- Панель управления исполнителями -->
         <div id="admin-sellers">
           <div id="seller-filters" class="row" style="flex-wrap: wrap; gap: 12px; margin-bottom: 12px"></div>
           <div id="seller-bulk-actions" class="row" style="flex-wrap: wrap; gap: 12px; margin-bottom: 12px"></div>
@@ -410,7 +309,7 @@
                 <th>Категория</th>
                 <th>Статус</th>
                 <th>Telegram</th>
-                <th>Сделки</th>
+                <th>Проекты</th>
                 <th>Дата</th>
                 <th>Действия</th>
               </tr>
@@ -487,7 +386,7 @@
               <button class="btn" id="export-json">Экспортировать</button>
               <textarea class="field" id="json-data" rows="4" placeholder="Данные будут здесь" readonly></textarea>
               <label>Вставьте JSON для импорта:</label>
-              <textarea class="field" id="json-import" rows="3" placeholder="{"sellers": [...], "users": [...], "settings": {...}}"></textarea>
+              <textarea class="field" id="json-import" rows="3" placeholder="{\"sellers\": [...], \"users\": [...], \"settings\": {...}}"></textarea>
               <button class="btn btn-primary" id="import-json">Импортировать</button>
             </section>
             <!-- Гарантии -->
@@ -504,835 +403,7 @@
     </div>
   </div>
 
-  <script>
-  // Используем отдельные ключи хранилища для тёмной темы,
-  // чтобы не конфликтовать с данными светлой версии
-  const LS = { users:'sd_users', session:'sd_session', sellers:'sd_sellers' };
-  function read(key, def){ try{ const raw = localStorage.getItem(key); const v = raw==null? undefined : JSON.parse(raw); return v!==undefined? v: def; }catch(e){ return def; } }
-  function write(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-
-  // Справочник категорий с человекочитаемыми названиями
-  const CAT_LABELS = {
-    design:'Дизайн',
-    programming:'Программирование',
-    marketing:'Маркетинг',
-    seo:'SEO',
-    content:'Копирайтинг',
-    support:'Поддержка'
-  };
-  function catLabel(v){ return CAT_LABELS[v] || v || '—'; }
-  function statusLabel(v){ return ({verified:'Проверенный', seller:'Исполнитель', recruiter:'Рекрутер', unverified:'Не проверен'})[v] || 'Исполнитель'; }
-
-  // Ключ для настроек и значения по умолчанию
-  const SETTINGS_KEY = 'sd_settings';
-  const DEFAULT_SETTINGS = {
-    ticker: {
-      items: [
-        '✅ 20 новых исполнителей добавлено за неделю',
-        '⭐ Мы поддерживаем честные отзывы',
-        '🚀 Начни сотрудничество уже сегодня'
-      ],
-      speed: 28
-    },
-    banners: {
-      slots: [
-        {src:'', link:''},
-        {src:'', link:''}
-      ]
-    },
-    palette: {
-      accent:'',
-      accentDark:'',
-      accent2:''
-    },
-    guarantee: {
-      title:'Безопасные сделки и честные исполнители',
-      subtitle:'Мы поддерживаем безопасные платежи и прозрачные условия работы.'
-    }
-  };
-
-  function getSettings(){
-    const st = read(SETTINGS_KEY, null);
-    if(!st) return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-    // глубокое слияние по ключам верхнего уровня
-    const res = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-    if(st.ticker){ res.ticker.items = Array.isArray(st.ticker.items)? st.ticker.items: res.ticker.items; res.ticker.speed = st.ticker.speed||res.ticker.speed; }
-    if(st.banners && Array.isArray(st.banners.slots)){
-      res.banners.slots = st.banners.slots.map((it,i)=>{
-        const defSlot = {src:'',link:''};
-        return Object.assign({}, defSlot, it||{});
-      });
-    }
-    if(st.palette){ res.palette.accent = st.palette.accent||res.palette.accent; res.palette.accentDark = st.palette.accentDark||res.palette.accentDark; res.palette.accent2 = st.palette.accent2||res.palette.accent2; }
-    if(st.guarantee){ res.guarantee.title = st.guarantee.title||res.guarantee.title; res.guarantee.subtitle = st.guarantee.subtitle||res.guarantee.subtitle; }
-    return res;
-  }
-  function saveSettings(s){ write(SETTINGS_KEY, s); }
-
-  // Применить настройки к странице
-  function applySettings(){
-    const st = getSettings();
-    // Палитра: если не заданы в настройках, берем из CSS root
-    const rootStyles = getComputedStyle(document.documentElement);
-    const accent = st.palette.accent || rootStyles.getPropertyValue('--accent').trim();
-    const accentDark = st.palette.accentDark || rootStyles.getPropertyValue('--accent-dark').trim();
-    const accent2 = st.palette.accent2 || rootStyles.getPropertyValue('--accent-2').trim();
-    document.documentElement.style.setProperty('--accent', accent);
-    document.documentElement.style.setProperty('--accent-dark', accentDark);
-    document.documentElement.style.setProperty('--accent-2', accent2);
-    // Обновить кольцо для фокуса
-    document.documentElement.style.setProperty('--ring', accent2);
-    document.documentElement.style.setProperty('--ring-soft', `rgba(${hexToRgb(accent2)},.25)`);
-    // Баннеры
-    const banners = st.banners && st.banners.slots? st.banners.slots : [];
-    banners.forEach((slot,i)=>{
-      const slotEl = document.querySelectorAll('.banner-slot')[i];
-      if(slotEl){
-        if(slot.src){
-          const linkStart = slot.link? `<a href="${escapeHTML(slot.link)}" target="_blank" rel="noopener">`: '';
-          const linkEnd = slot.link? '</a>': '';
-          slotEl.innerHTML = `${linkStart}<img src="${escapeHTML(slot.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
-        }
-      }
-    });
-    // Бегущая строка
-    const tickerTrack = document.getElementById('ticker');
-    if(tickerTrack){
-      const items = Array.isArray(st.ticker.items)? st.ticker.items: DEFAULT_SETTINGS.ticker.items;
-      tickerTrack.innerHTML = '';
-      items.forEach(it=>{ const span=document.createElement('span'); span.textContent=it; tickerTrack.appendChild(span); });
-      // дублировать для бесконечной ленты
-      items.forEach(it=>{ const span=document.createElement('span'); span.textContent=it; tickerTrack.appendChild(span); });
-      // установить скорость как CSS custom property
-      tickerTrack.style.setProperty('--t', st.ticker.speed+'s');
-    }
-    // Гарантия
-    const gTitleEl = document.querySelector('.guarantee h3');
-    const gSubEl = document.querySelector('.guarantee p.muted');
-    if(gTitleEl) gTitleEl.textContent = st.guarantee.title;
-    if(gSubEl) gSubEl.textContent = st.guarantee.subtitle;
-    // Заполнить формы настроек (если существуют)
-    // баннеры
-    const fileInputs = [document.getElementById('banner-file-1'), document.getElementById('banner-file-2')];
-    const urlInputs = [document.getElementById('banner-url-1'), document.getElementById('banner-url-2')];
-    const linkInputs = [document.getElementById('banner-link-1'), document.getElementById('banner-link-2')];
-    const previewEls = [document.getElementById('banner-preview-1'), document.getElementById('banner-preview-2')];
-    for(let i=0;i<2;i++){
-      const slot = banners[i]||{};
-      if(urlInputs[i]) urlInputs[i].value = slot.src && !slot.src.startsWith('data:')? slot.src: '';
-      if(linkInputs[i]) linkInputs[i].value = slot.link || '';
-      if(previewEls[i]){
-        if(slot.src){ previewEls[i].innerHTML = `<img src="${escapeHTML(slot.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:6px">`; }
-        else{ previewEls[i].innerHTML=''; }
-      }
-    }
-    // бегущая строка формы
-    const tickerItemsInput = document.getElementById('ticker-items');
-    const tickerSpeedInput = document.getElementById('ticker-speed');
-    if(tickerItemsInput) tickerItemsInput.value = (st.ticker.items||[]).join('\n');
-    if(tickerSpeedInput) tickerSpeedInput.value = st.ticker.speed;
-    // палитра формы
-    const palAccent = document.getElementById('palette-accent');
-    const palDark = document.getElementById('palette-accent-dark');
-    const pal2 = document.getElementById('palette-accent2');
-    if(palAccent) palAccent.value = toHex(accent);
-    if(palDark) palDark.value = toHex(accentDark);
-    if(pal2) pal2.value = toHex(accent2);
-    // гарантия формы
-    const gTitleInput = document.getElementById('guarantee-title');
-    const gSubtitleInput = document.getElementById('guarantee-subtitle');
-    if(gTitleInput) gTitleInput.value = st.guarantee.title;
-    if(gSubtitleInput) gSubtitleInput.value = st.guarantee.subtitle;
-  }
-
-  // Вспомогательные функции: преобразование HEX в RGB и обратно
-  function hexToRgb(hex){
-    hex = hex.replace('#','');
-    if(hex.length===3){ hex = hex.split('').map(c=>c+c).join(''); }
-    const num = parseInt(hex,16);
-    return `${(num>>16)&255},${(num>>8)&255},${num&255}`;
-  }
-  function toHex(col){
-    // Принимает цвет в формате rgb(...) или hex; возвращает hex
-    col = col.trim();
-    if(col.startsWith('#')) return col;
-    const m = col.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
-    if(m){ const r=Number(m[1]); const g=Number(m[2]); const b=Number(m[3]); const toHex=x=>x.toString(16).padStart(2,'0'); return `#${toHex(r)}${toHex(g)}${toHex(b)}`; }
-    return col;
-  }
-
-  // Первичное заполнение данных для примера, включая дату создания и флаг блокировки
-  (function seed(){
-    const now = new Date().toISOString();
-    const usersSeed = [
-      {u:'admin',p:'admin',role:'admin',created: now},
-      {u:'user',p:'user',role:'user',created: now}
-    ];
-    const sellersSeed = [
-      {id:1,name:'WebDesignPro',nick:'admin',desc:'Создаю современные и адаптивные сайты. Опыт более 5 лет.',cat:'design',status:'verified',flags:{verified:true,escrow:true,rating4:true},avatar:'',deposits:'фриланс: 5 лет',deals:42,tg:'@webdesignpro',forums:[{title:'Behance',url:'https://behance.net/user1'},{title:'Dribbble',url:'https://dribbble.com/user1'}],created: now,blocked:false},
-      {id:2,name:'CodeMaster',nick:'user',desc:'Разработка веб‑приложений под ключ. Node.js, Python.',cat:'programming',status:'seller',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'студия: 3 года',deals:15,tg:'@codemaster',forums:[{title:'GitHub',url:'https://github.com/user2'}],created: now,blocked:false},
-      {id:3,name:'MarketGuru',nick:'user',desc:'Помогаю компаниям расти с помощью эффективного маркетинга.',cat:'marketing',status:'unverified',flags:{verified:false,escrow:false,rating4:false},avatar:'',deposits:'—',deals:0,tg:'@marketguru',forums:[],created: now,blocked:false},
-      {id:4,name:'SEOExpert',nick:'admin',desc:'Оптимизация сайтов для поисковых систем. Аналитика трафика.',cat:'seo',status:'recruiter',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'агентство: 4 года',deals:7,tg:'@seoexpert',forums:[{title:'Portfolio',url:'https://portfolio.example/seoexpert'}],created: now,blocked:false}
-    ];
-    const existingUsers = read(LS.users);
-    if(!Array.isArray(existingUsers) || existingUsers.length===0) write(LS.users, usersSeed);
-    const existingSellers = read(LS.sellers);
-    if(!Array.isArray(existingSellers) || existingSellers.length===0) write(LS.sellers, sellersSeed);
-  })();
-
-  const authBox = document.getElementById('auth-box');
-  const userBox = document.getElementById('user-box');
-  const uName = document.getElementById('u-name');
-  const navAdmin = document.getElementById('nav-admin');
-
-  function getSession(){ return read(LS.session,null); }
-  function setSession(s){ if(s) write(LS.session,s); else localStorage.removeItem(LS.session); syncAuth(); }
-
-  function syncAuth(){
-    const s = getSession();
-    if(s){ authBox.classList.add('hidden'); userBox.classList.remove('hidden'); uName.textContent = s.u + (s.role==='admin'? ' (admin)':'' ); navAdmin.hidden = s.role!=='admin'; }
-    else { userBox.classList.add('hidden'); authBox.classList.remove('hidden'); navAdmin.hidden = true; }
-  }
-  syncAuth();
-
-  const cardsWrap = document.getElementById('cards');
-  const emptyHint = document.getElementById('empty');
-  let currentFilter = {status:'all',cat:'all'};
-
-  function escapeHTML(s){ return (s+'').replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
-
-  function cardHTML(s){
-    // отображаем аватар, имя, описание и один статус (без дополнительных флагов)
-    const ava = s.avatar? `<img src="${escapeHTML(s.avatar)}" alt="">` : (escapeHTML((s.name||'?')[0]||'?'));
-    const forumChips = (Array.isArray(s.forums)? s.forums: []).slice(0,2).map(it=>{
-      const t = escapeHTML(it.title||'Ссылка');
-      const u = escapeHTML(it.url||'#');
-      return `<a class="link-chip" href="${u}" target="_blank" rel="noopener">🔗 ${t}</a>`;
-    }).join('');
-    const tgLink = s.tg? `https://t.me/${escapeHTML(String(s.tg).replace(/^@/,''))}` : '';
-    return `<article class="card">
-      <div class="card-head">
-        <div class="avatar">${ava}</div>
-        <div style="min-width:0">
-          <div style="font-weight:800">${escapeHTML(s.name)}</div>
-          <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(s.desc||'')}</div>
-          <div class="row" style="gap:6px;margin-top:6px">
-            <span class="chip">${escapeHTML(statusLabel(s.status))}</span>
-          </div>
-          <div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap">${forumChips}</div>
-        </div>
-      </div>
-      <div class="card-foot">
-        <button class="btn" data-profile="${s.id}">Профиль</button>
-        ${tgLink? `<a class="btn btn-primary" href="${tgLink}" target="_blank" rel="noopener">Связаться</a>`: '<button class="btn btn-primary" disabled>Связаться</button>'}
-      </div>
-    </article>`;
-  }
-
-  function renderCards(){
-    const list = read(LS.sellers,[]).filter(s=>{
-      // Пропускаем заблокированных продавцов
-      if(s.blocked) return false;
-      const statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
-      const catOk = currentFilter.cat==='all' || s.cat===currentFilter.cat;
-      return statusOk && catOk;
-    });
-    cardsWrap.innerHTML = list.map(cardHTML).join('');
-    emptyHint.classList.toggle('hidden', list.length>0);
-  }
-  renderCards();
-
-  document.querySelectorAll('.toggle').forEach(btn=>{
-    btn.addEventListener('click',()=>{ const target = document.querySelector(btn.dataset.toggle); if(!target) return; target.hidden = !target.hidden; btn.textContent = target.hidden? 'Показать':'Скрыть'; });
-  });
-  document.querySelectorAll('#flt li').forEach(li=>{
-    li.addEventListener('click',()=>{ document.querySelectorAll('#flt li').forEach(x=>x.classList.remove('active')); li.classList.add('active'); currentFilter.status = li.dataset.status; renderCards(); });
-  });
-  document.querySelectorAll('#cats li').forEach(li=>{
-    li.addEventListener('click',()=>{ document.querySelectorAll('#cats li').forEach(x=>x.classList.remove('active')); li.classList.add('active'); currentFilter.cat = li.dataset.cat; renderCards(); });
-  });
-
-  const cardModal = document.getElementById('card-modal');
-  function openModal(m){ m.classList.add('open'); }
-  function closeModal(m){ m.classList.remove('open'); }
-  document.querySelectorAll('[data-close]').forEach(b=> b.addEventListener('click',e=> closeModal(e.target.closest('.modal'))));
-  function id(x){ return document.getElementById(x); }
-
-  document.getElementById('btn-add-card').addEventListener('click',()=>{
-    if(!getSession()) return openAuth('login');
-    // при создании новой карточки сбрасываем текущий режим редактирования
-    currentEditingId = null;
-    id('c-nick').value = getSession().u;
-    id('c-ava-file').value = '';
-    id('c-ava-url').value='';
-    id('c-ava-preview').innerHTML='?';
-    delete id('c-ava-preview').dataset.src;
-    const list = id('c-forums-list');
-    if(list){ list.innerHTML=''; addForumRow(); }
-    // заголовок модального окна
-    const ct = document.getElementById('card-title'); if(ct) ct.textContent = 'Новая карточка';
-    openModal(cardModal);
-  });
-
-  function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
-  id('c-ava-file').addEventListener('change', async (e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const url = await fileToDataURL(f); const prev = id('c-ava-preview'); prev.innerHTML = `<img src="${url}" alt="">`; id('c-ava-url').value=''; prev.dataset.src=url; });
-  id('c-ava-url').addEventListener('input',()=>{ const v=id('c-ava-url').value.trim(); const prev=id('c-ava-preview'); if(v){ prev.innerHTML = `<img src="${v}" alt="">`; prev.dataset.src=v; }else{ prev.innerHTML='?'; delete prev.dataset.src; } });
-
-  function normalizeURL(u){ u=(u||'').trim(); if(!u) return ''; try{ const url=new URL(u, window.location.origin); if(url.protocol==='http:'||url.protocol==='https:') return url.href; return ''; }catch(e){ try{ const url=new URL('https://'+u); return url.href; }catch(_){ return ''; } } }
-  function addForumRow(title='', url=''){
-    const list = id('c-forums-list'); if(!list) return;
-    const row = document.createElement('div'); row.className='forum-row';
-    row.innerHTML = `
-      <input class="field forum-title" placeholder="Название ресурса" value="${escapeHTML(title)}" />
-      <input class="field forum-url" placeholder="https://ссылка-на-портфолио" value="${escapeHTML(url)}" />
-      <button class="btn rm" type="button">✕</button>`;
-    row.querySelector('.rm').addEventListener('click',()=>{ row.remove(); });
-    list.appendChild(row);
-  }
-  function collectForums(){
-    const list = id('c-forums-list'); if(!list) return [];
-    const rows = Array.from(list.querySelectorAll('.forum-row'));
-    return rows.map(r=>{
-      const t = (r.querySelector('.forum-title')?.value||'').trim();
-      const u = normalizeURL(r.querySelector('.forum-url')?.value||'');
-      return {title:t, url:u};
-    }).filter(it=> it.title && it.url);
-  }
-  const btnForumAdd = document.getElementById('forum-add'); if(btnForumAdd) btnForumAdd.addEventListener('click',()=> addForumRow());
-
-  id('c-save').addEventListener('click',()=>{
-    const s = getSession(); if(!s) return;
-    const name = (id('c-nick').value || s.u).trim();
-    const desc = id('c-desc').value.trim();
-    const cat = id('c-cat').value;
-    // для нового всегда статус unverified, для редактируемого оставляем старый
-    const avatar = id('c-ava-preview').dataset.src||'';
-    const deposits = id('c-deposits').value.trim();
-    const deals = Math.max(0, parseInt(id('c-deals').value||'0',10))||0;
-    const tg = id('c-tg').value.trim();
-    const forums = collectForums();
-    const arr = read(LS.sellers,[]);
-    if(currentEditingId){
-      // обновление существующей записи
-      const item = arr.find(x=> x.id===currentEditingId);
-      if(item){
-        item.name = name;
-        item.desc = desc;
-        item.cat = cat;
-        item.avatar = avatar;
-        item.deposits = deposits;
-        item.deals = deals;
-        item.tg = tg;
-        item.forums = forums;
-        // flags и статус не меняем здесь
-        write(LS.sellers,arr);
-      }
-      currentEditingId = null;
-    } else {
-      // добавление новой
-      const idnew = (arr.reduce((m,x)=>Math.max(m,x.id),0)||0)+1;
-      const status = 'unverified';
-      const flags = {verified:false, escrow:false, rating4:false};
-      arr.push({id:idnew,name,nick:s.u,desc,cat,status,flags,avatar,deposits,deals,tg,forums,created:new Date().toISOString(),blocked:false});
-      write(LS.sellers,arr);
-    }
-    closeModal(cardModal);
-    // сбросить поля формы
-    ['c-desc','c-ava-url','c-deposits','c-deals','c-tg'].forEach(k=>{ const el=id(k); if(!el) return; if(el.type==='checkbox') el.checked=false; else el.value=''; });
-    id('c-cat').value='design'; id('c-ava-preview').innerHTML='?'; delete id('c-ava-preview').dataset.src; const lst=id('c-forums-list'); if(lst) lst.innerHTML='';
-    renderCards();
-    if(id('admin-modal').classList.contains('open')) fillAdminTables();
-  });
-
-  const authModal = id('auth-modal');
-  const tabs = document.querySelectorAll('[data-auth-tab]');
-  tabs.forEach(t=> t.addEventListener('click',()=>{ tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); id('form-login').classList.toggle('hidden', t.dataset.authTab!=='login'); id('form-register').classList.toggle('hidden', t.dataset.authTab!=='register'); id('auth-title').textContent = t.dataset.authTab==='login'? 'Вход':'Регистрация'; }));
-
-  document.getElementById('btn-login').addEventListener('click',()=> openAuth('login'));
-  document.getElementById('btn-register').addEventListener('click',()=> openAuth('register'));
-  function openAuth(mode){ const to = mode==='register'? 'register':'login'; tabs.forEach(t=> t.classList.toggle('active', t.dataset.authTab===to)); id('form-login').classList.toggle('hidden', to!=='login'); id('form-register').classList.toggle('hidden', to!=='register'); id('auth-title').textContent = to==='login'? 'Вход':'Регистрация'; openModal(authModal); }
-
-  document.getElementById('do-register').addEventListener('click',()=>{
-    const u = id('rg-user').value.trim();
-    const p = id('rg-pass').value;
-    const err = id('rg-err');
-    err.textContent='';
-    if(!u || !p){ err.textContent='Заполните логин и пароль'; return; }
-    const users = read(LS.users,[]);
-    if(users.some(x=>x.u===u)){ err.textContent='Пользователь уже существует'; return; }
-    const role='user';
-    users.push({u,p,role,created:new Date().toISOString()});
-    write(LS.users,users);
-    setSession({u,role});
-    closeModal(authModal);
-    syncAuth();
-  });
-  document.getElementById('do-login').addEventListener('click',()=>{ const u = id('li-user').value.trim(); const p = id('li-pass').value; const err = id('li-err'); err.textContent=''; const users = read(LS.users,[]); const found = users.find(x=>x.u===u && x.p===p); if(!found){ err.textContent='Неверные логин или пароль'; return; } setSession({u:found.u,role:found.role}); closeModal(authModal); });
-  document.getElementById('btn-logout').addEventListener('click',()=>{ setSession(null); });
-
-  const adminModal = id('admin-modal');
-  document.getElementById('nav-admin').addEventListener('click', (e)=>{ e.preventDefault(); if(getSession()?.role!=='admin') return alert('Недостаточно прав'); openModal(adminModal); fillAdminTables(); });
-  const adminTabs = document.querySelectorAll('[data-admin-tab]');
-  adminTabs.forEach(t=> t.addEventListener('click',()=>{
-    adminTabs.forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    const tab = t.dataset.adminTab;
-    id('admin-sellers').classList.toggle('hidden', tab!=='sellers');
-    id('admin-users').classList.toggle('hidden', tab!=='users');
-    id('admin-settings').classList.toggle('hidden', tab!=='settings');
-    if(tab==='sellers'){ fillAdminSellers(); }
-    if(tab==='users'){ fillAdminUsers(); }
-    if(tab==='settings'){ fillAdminSettings(); }
-  }));
-
-  // Глобальные переменные для фильтров и выбора продавцов
-  let sellerFilter = {nick:'', tg:'', cat:'all', status:'all'};
-  let sellerSelection = new Set();
-  let currentEditingId = null;
-
-  // Открыть модальное окно для редактирования существующего продавца
-  // При вызове устанавливается currentEditingId и заполняются поля формы
-  function openEditSeller(idd){
-    const arr = read(LS.sellers, []);
-    const item = arr.find(x => x.id === idd);
-    if(!item) return;
-    currentEditingId = item.id;
-    const titleEl = document.getElementById('card-title');
-    if(titleEl) titleEl.textContent = 'Редактировать карточку';
-    // Заполняем поля: имя (используем поле name), описание, категория, аватар, опыт, проекты, TG, ссылки
-    const nickInput = document.getElementById('c-nick');
-    if(nickInput){ nickInput.value = item.name || ''; }
-    const descInput = document.getElementById('c-desc');
-    if(descInput){ descInput.value = item.desc || ''; }
-    const catSelect = document.getElementById('c-cat');
-    if(catSelect){ catSelect.value = item.cat || 'design'; }
-    // аватар
-    const avaPrev = document.getElementById('c-ava-preview');
-    if(avaPrev){
-      if(item.avatar){ avaPrev.innerHTML = `<img src="${escapeHTML(item.avatar)}" alt="">`; avaPrev.dataset.src = item.avatar; }
-      else { avaPrev.innerHTML = '?'; delete avaPrev.dataset.src; }
-    }
-    // Сбрасываем поля выбора аватара
-    const avaFile = document.getElementById('c-ava-file');
-    if(avaFile) avaFile.value = '';
-    const avaUrl = document.getElementById('c-ava-url');
-    if(avaUrl) avaUrl.value = '';
-    const depInput = document.getElementById('c-deposits');
-    if(depInput) depInput.value = item.deposits || '';
-    const dealsInput = document.getElementById('c-deals');
-    if(dealsInput) dealsInput.value = Number(item.deals || 0);
-    const tgInput = document.getElementById('c-tg');
-    if(tgInput) tgInput.value = item.tg || '';
-    const forumsList = document.getElementById('c-forums-list');
-    if(forumsList){ forumsList.innerHTML = ''; (Array.isArray(item.forums)? item.forums: []).forEach(f => addForumRow(f.title, f.url)); }
-    openModal(cardModal);
-  }
-
-  function fillAdminTables(){
-    fillAdminSellers();
-    fillAdminUsers();
-    fillAdminSettings();
-  }
-
-  // Фильтрация и построение таблицы продавцов
-  function fillAdminSellers(){
-    const all = read(LS.sellers,[]);
-    // построить элементы фильтра один раз
-    const filtWrap = document.getElementById('seller-filters');
-    if(filtWrap && !filtWrap.dataset.init){
-      filtWrap.dataset.init='1';
-      // Ник
-      const nickInput = document.createElement('input'); nickInput.className='field'; nickInput.placeholder='Поиск по имени/никту'; nickInput.style.minWidth='160px';
-      nickInput.addEventListener('input',()=>{ sellerFilter.nick = nickInput.value.trim(); fillAdminSellers(); });
-      filtWrap.appendChild(nickInput);
-      // TG
-      const tgInput = document.createElement('input'); tgInput.className='field'; tgInput.placeholder='Поиск по TG'; tgInput.style.minWidth='140px'; tgInput.addEventListener('input',()=>{ sellerFilter.tg = tgInput.value.trim(); fillAdminSellers(); });
-      filtWrap.appendChild(tgInput);
-      // Категория
-      const catSel = document.createElement('select'); catSel.className='select';
-      catSel.innerHTML = `<option value="all">Все категории</option>` + Object.keys(CAT_LABELS).map(k=>`<option value="${k}">${escapeHTML(catLabel(k))}</option>`).join('');
-      catSel.addEventListener('change',()=>{ sellerFilter.cat = catSel.value; fillAdminSellers(); });
-      filtWrap.appendChild(catSel);
-      // Статус
-      const statSel = document.createElement('select'); statSel.className='select';
-      statSel.innerHTML = '<option value="all">Все статусы</option>' + ['verified','seller','recruiter','unverified','blocked'].map(st=>`<option value="${st}">${escapeHTML(statusLabel(st))}</option>`).join('');
-      statSel.addEventListener('change',()=>{ sellerFilter.status = statSel.value; fillAdminSellers(); });
-      filtWrap.appendChild(statSel);
-    }
-    // Массовые операции (bulk actions) один раз
-    const bulkWrap = document.getElementById('seller-bulk-actions');
-    if(bulkWrap && !bulkWrap.dataset.init){
-      bulkWrap.dataset.init='1';
-      // Смена статуса
-      const bulkStatSel = document.createElement('select'); bulkStatSel.className='select';
-      bulkStatSel.innerHTML = ['','verified','seller','recruiter','unverified','blocked'].map(st=>`<option value="${st}">${st? escapeHTML(statusLabel(st)):'— изменить статус —'}</option>`).join('');
-      const bulkStatBtn = document.createElement('button'); bulkStatBtn.className='btn'; bulkStatBtn.textContent='Применить статус';
-      bulkStatBtn.addEventListener('click',()=>{
-        const val = bulkStatSel.value;
-        if(!val) return;
-        const arr = read(LS.sellers,[]);
-        arr.forEach(item=>{ if(sellerSelection.has(item.id)) item.status = val; });
-        write(LS.sellers,arr);
-        sellerSelection.clear();
-        document.getElementById('sel-all-sellers').checked=false;
-        fillAdminSellers(); renderCards();
-      });
-      bulkWrap.appendChild(bulkStatSel);
-      bulkWrap.appendChild(bulkStatBtn);
-      // Смена категории
-      const bulkCatSel = document.createElement('select'); bulkCatSel.className='select';
-      // перечень категорий для массовой смены: пустой (placeholder) и все категории
-      bulkCatSel.innerHTML = `<option value="">— изменить категорию —</option>` + Object.keys(CAT_LABELS).map(k=>`<option value="${k}">${escapeHTML(catLabel(k))}</option>`).join('');
-      const bulkCatBtn = document.createElement('button'); bulkCatBtn.className='btn'; bulkCatBtn.textContent='Применить категорию';
-      bulkCatBtn.addEventListener('click',()=>{
-        const val = bulkCatSel.value;
-        if(!val) return;
-        const arr = read(LS.sellers,[]);
-        arr.forEach(item=>{ if(sellerSelection.has(item.id)) item.cat = val; });
-        write(LS.sellers,arr);
-        sellerSelection.clear();
-        document.getElementById('sel-all-sellers').checked=false;
-        fillAdminSellers(); renderCards();
-      });
-      bulkWrap.appendChild(bulkCatSel);
-      bulkWrap.appendChild(bulkCatBtn);
-      // Массовое удаление
-      const bulkDelBtn = document.createElement('button'); bulkDelBtn.className='btn btn-danger'; bulkDelBtn.textContent='Удалить выбранные';
-      bulkDelBtn.addEventListener('click',()=>{
-        if(sellerSelection.size===0) return;
-        let arr = read(LS.sellers,[]);
-        arr = arr.filter(item=> !sellerSelection.has(item.id));
-        write(LS.sellers,arr);
-        sellerSelection.clear();
-        document.getElementById('sel-all-sellers').checked=false;
-        fillAdminSellers(); renderCards();
-      });
-      bulkWrap.appendChild(bulkDelBtn);
-    }
-    // Фильтрация
-    let list = all;
-    if(sellerFilter.nick){
-      const q = sellerFilter.nick.toLowerCase();
-      list = list.filter(it=> (it.name && it.name.toLowerCase().includes(q)) || (it.nick && it.nick.toLowerCase().includes(q)));
-    }
-    if(sellerFilter.tg){
-      const q = sellerFilter.tg.toLowerCase();
-      list = list.filter(it=> it.tg && it.tg.toLowerCase().includes(q));
-    }
-    if(sellerFilter.cat !== 'all'){
-      list = list.filter(it=> it.cat === sellerFilter.cat);
-    }
-    if(sellerFilter.status !== 'all'){
-      if(sellerFilter.status === 'blocked') list = list.filter(it=> it.blocked);
-      else list = list.filter(it=> it.status === sellerFilter.status && !it.blocked);
-    }
-    const tbody = document.querySelector('#tbl-sellers tbody');
-    tbody.innerHTML = list.map(item=>{
-      const created = item.created? new Date(item.created).toLocaleDateString() : '';
-      const statusOptions = ['verified','seller','recruiter','unverified','blocked'].map(st=>{
-        const sel = item.status===st? 'selected':'';
-        return `<option value="${st}" ${sel}>${escapeHTML(statusLabel(st))}</option>`;
-      }).join('');
-      const catOptions = Object.keys(CAT_LABELS).map(k=>{
-        const sel = item.cat===k? 'selected':'';
-        return `<option value="${k}" ${sel}>${escapeHTML(catLabel(k))}</option>`;
-      }).join('');
-      return `<tr>
-        <td><input type="checkbox" class="sel-chk" data-seller="${item.id}" ${sellerSelection.has(item.id)?'checked':''}></td>
-        <td>${escapeHTML(item.name)}</td>
-        <td>${escapeHTML(catLabel(item.cat))}</td>
-        <td><select class="select sel-status" data-seller="${item.id}">${statusOptions}</select></td>
-        <td>${escapeHTML(item.tg||'—')}</td>
-        <td>${Number(item.deals||0)}</td>
-        <td>${escapeHTML(created)}</td>
-        <td>
-          <button class="btn" data-edit-seller="${item.id}">Редактировать</button>
-          <button class="btn btn-danger" data-del-seller="${item.id}">Удалить</button>
-          <button class="btn" data-block-seller="${item.id}">${item.blocked? 'Разблокировать' : 'Блокировать'}</button>
-        </td>
-      </tr>`;
-    }).join('');
-    // Обработчики выбора чекбоксов
-    tbody.querySelectorAll('.sel-chk').forEach(ch=> ch.addEventListener('change',()=>{
-      const idd = +ch.getAttribute('data-seller');
-      if(ch.checked) sellerSelection.add(idd); else sellerSelection.delete(idd);
-      // обновить селектор "выбрать всё"
-      const allIds = Array.from(tbody.querySelectorAll('.sel-chk')).map(c=> +c.getAttribute('data-seller'));
-      document.getElementById('sel-all-sellers').checked = allIds.length>0 && allIds.every(id=> sellerSelection.has(id));
-    }));
-    // Выбор "выбрать всё"
-    const selAll = document.getElementById('sel-all-sellers');
-    if(selAll && !selAll.dataset.bound){
-      selAll.dataset.bound='1';
-      selAll.addEventListener('change',()=>{
-        const check = selAll.checked;
-        sellerSelection.clear();
-        tbody.querySelectorAll('.sel-chk').forEach(chk=>{
-          chk.checked = check;
-          const idd = +chk.getAttribute('data-seller');
-          if(check) sellerSelection.add(idd);
-        });
-      });
-    }
-    // Удаление отдельного продавца
-    tbody.querySelectorAll('[data-del-seller]').forEach(btn=> btn.addEventListener('click',()=>{
-      const idd = +btn.getAttribute('data-del-seller');
-      let arr = read(LS.sellers,[]);
-      arr = arr.filter(x=> x.id!==idd);
-      write(LS.sellers,arr);
-      sellerSelection.delete(idd);
-      fillAdminSellers(); renderCards();
-    }));
-    // Блокировка/разблокировка
-    tbody.querySelectorAll('[data-block-seller]').forEach(btn=> btn.addEventListener('click',()=>{
-      const idd = +btn.getAttribute('data-block-seller');
-      const arr = read(LS.sellers,[]);
-      const item = arr.find(x=> x.id===idd);
-      if(item){ item.blocked = !item.blocked; write(LS.sellers,arr); }
-      fillAdminSellers(); renderCards();
-    }));
-    // Изменение статуса
-    tbody.querySelectorAll('.sel-status').forEach(sel=> sel.addEventListener('change',()=>{
-      const idd = +sel.getAttribute('data-seller');
-      const arr = read(LS.sellers,[]);
-      const item = arr.find(x=> x.id===idd);
-      if(item){ item.status = sel.value; if(sel.value==='blocked'){ item.blocked = true; } else { item.blocked = false; } write(LS.sellers,arr); }
-      fillAdminSellers(); renderCards();
-    }));
-    // Изменение категории через bulk actions handled above
-    // Редактирование продавца
-    tbody.querySelectorAll('[data-edit-seller]').forEach(btn=> btn.addEventListener('click',()=>{
-      const idd = +btn.getAttribute('data-edit-seller');
-      openEditSeller(idd);
-    }));
-  }
-
-  // Построить таблицу пользователей и действия
-  function fillAdminUsers(){
-    const us = read(LS.users,[]);
-    const tbu = document.querySelector('#tbl-users tbody');
-    tbu.innerHTML = us.map(u=>{
-      const created = u.created? new Date(u.created).toLocaleDateString() : '';
-      const actions = [];
-      if(u.u !== 'admin'){
-        if(u.role === 'user') actions.push(`<button class="btn" data-promote-user="${escapeHTML(u.u)}">Повысить до admin</button>`);
-        if(u.role === 'admin') actions.push(`<button class="btn" data-demote-user="${escapeHTML(u.u)}">Понизить до user</button>`);
-        actions.push(`<button class="btn" data-reset-user="${escapeHTML(u.u)}">Сбросить пароль</button>`);
-        actions.push(`<button class="btn btn-danger" data-del-user="${escapeHTML(u.u)}">Удалить</button>`);
-      } else {
-        actions.push('—');
-      }
-      return `<tr>
-        <td>${escapeHTML(u.u)}</td>
-        <td>${escapeHTML(u.role)}</td>
-        <td>${escapeHTML(created)}</td>
-        <td>${actions.join(' ')}</td>
-      </tr>`;
-    }).join('');
-    // Действия для пользователей
-    tbu.querySelectorAll('[data-promote-user]').forEach(btn=> btn.addEventListener('click',()=>{
-      const u = btn.getAttribute('data-promote-user');
-      const arr = read(LS.users,[]);
-      const user = arr.find(x=> x.u===u);
-      if(user){ user.role='admin'; write(LS.users,arr); fillAdminUsers(); syncAuth(); }
-    }));
-    tbu.querySelectorAll('[data-demote-user]').forEach(btn=> btn.addEventListener('click',()=>{
-      const u = btn.getAttribute('data-demote-user');
-      const arr = read(LS.users,[]);
-      const user = arr.find(x=> x.u===u);
-      if(user){ user.role='user'; write(LS.users,arr); fillAdminUsers(); syncAuth(); }
-    }));
-    tbu.querySelectorAll('[data-reset-user]').forEach(btn=> btn.addEventListener('click',()=>{
-      const u = btn.getAttribute('data-reset-user');
-      const arr = read(LS.users,[]);
-      const user = arr.find(x=> x.u===u);
-      if(user){
-        const newPass = Math.random().toString(36).slice(2,10);
-        user.p = newPass;
-        write(LS.users,arr);
-        alert('Новый пароль для '+u+': '+newPass);
-      }
-    }));
-    tbu.querySelectorAll('[data-del-user]').forEach(btn=> btn.addEventListener('click',()=>{
-      const u = btn.getAttribute('data-del-user');
-      let arr = read(LS.users,[]);
-      arr = arr.filter(x=> x.u!==u);
-      write(LS.users,arr);
-      fillAdminUsers();
-    }));
-  }
-
-  // Настройки: заполняем формы и назначаем обработчики
-  function fillAdminSettings(){
-    // заполняется в applySettings; здесь назначаем обработчики
-    // Баннеры: загрузка файлов и ссылок
-    const fileInputs = [document.getElementById('banner-file-1'), document.getElementById('banner-file-2')];
-    const urlInputs = [document.getElementById('banner-url-1'), document.getElementById('banner-url-2')];
-    const linkInputs = [document.getElementById('banner-link-1'), document.getElementById('banner-link-2')];
-    const previewEls = [document.getElementById('banner-preview-1'), document.getElementById('banner-preview-2')];
-    const st = getSettings();
-    function handleBannerFile(i){
-      const file = fileInputs[i].files && fileInputs[i].files[0];
-      if(!file) return;
-      const fr = new FileReader();
-      fr.onload = ()=>{
-        st.banners.slots[i].src = fr.result;
-        // clear url field
-        if(urlInputs[i]) urlInputs[i].value = '';
-        saveSettings(st);
-        applySettings();
-      };
-      fr.readAsDataURL(file);
-    }
-    fileInputs.forEach((inp,i)=>{
-      if(inp && !inp.dataset.bound){ inp.dataset.bound='1'; inp.addEventListener('change',()=> handleBannerFile(i)); }
-    });
-    urlInputs.forEach((inp,i)=>{
-      if(inp && !inp.dataset.bound){ inp.dataset.bound='1'; inp.addEventListener('input',()=>{
-        st.banners.slots[i].src = normalizeURL(inp.value.trim());
-        saveSettings(st);
-        applySettings();
-      }); }
-    });
-    linkInputs.forEach((inp,i)=>{
-      if(inp && !inp.dataset.bound){ inp.dataset.bound='1'; inp.addEventListener('input',()=>{
-        st.banners.slots[i].link = inp.value.trim();
-        saveSettings(st);
-      }); }
-    });
-    // Бегущая строка
-    const tickerItems = document.getElementById('ticker-items');
-    const tickerSpeed = document.getElementById('ticker-speed');
-    if(tickerItems && !tickerItems.dataset.bound){ tickerItems.dataset.bound='1'; tickerItems.addEventListener('input',()=>{
-      st.ticker.items = tickerItems.value.split('\n').map(x=>x.trim()).filter(x=>x);
-      saveSettings(st);
-      applySettings();
-    }); }
-    if(tickerSpeed && !tickerSpeed.dataset.bound){ tickerSpeed.dataset.bound='1'; tickerSpeed.addEventListener('change',()=>{
-      const v = parseInt(tickerSpeed.value||'0',10);
-      st.ticker.speed = isNaN(v)? DEFAULT_SETTINGS.ticker.speed : Math.max(5,v);
-      saveSettings(st);
-      applySettings();
-    }); }
-    // Палитра
-    const palAccent = document.getElementById('palette-accent');
-    const palDark = document.getElementById('palette-accent-dark');
-    const pal2 = document.getElementById('palette-accent2');
-    function updatePalette(){
-      st.palette.accent = palAccent.value;
-      st.palette.accentDark = palDark.value;
-      st.palette.accent2 = pal2.value;
-      saveSettings(st);
-      applySettings();
-    }
-    [palAccent,palDark,pal2].forEach(inp=>{
-      if(inp && !inp.dataset.bound){ inp.dataset.bound='1'; inp.addEventListener('change',updatePalette); }
-    });
-    // Гарантии
-    const gTitle = document.getElementById('guarantee-title');
-    const gSub = document.getElementById('guarantee-subtitle');
-    if(gTitle && !gTitle.dataset.bound){ gTitle.dataset.bound='1'; gTitle.addEventListener('input',()=>{
-      st.guarantee.title = gTitle.value;
-      saveSettings(st);
-      applySettings();
-    }); }
-    if(gSub && !gSub.dataset.bound){ gSub.dataset.bound='1'; gSub.addEventListener('input',()=>{
-      st.guarantee.subtitle = gSub.value;
-      saveSettings(st);
-      applySettings();
-    }); }
-    // Экспорт JSON
-    const exportBtn = document.getElementById('export-json');
-    if(exportBtn && !exportBtn.dataset.bound){ exportBtn.dataset.bound='1'; exportBtn.addEventListener('click',()=>{
-      const data = { sellers: read(LS.sellers,[]), users: read(LS.users,[]), settings: getSettings() };
-      document.getElementById('json-data').value = JSON.stringify(data, null, 2);
-    }); }
-    // Импорт JSON
-    const importBtn = document.getElementById('import-json');
-    if(importBtn && !importBtn.dataset.bound){ importBtn.dataset.bound='1'; importBtn.addEventListener('click',()=>{
-      try{
-        const txt = document.getElementById('json-import').value;
-        const obj = JSON.parse(txt);
-        if(obj.sellers) write(LS.sellers,obj.sellers);
-        if(obj.users) write(LS.users,obj.users);
-        if(obj.settings) saveSettings(obj.settings);
-        fillAdminTables();
-        renderCards();
-        applySettings();
-        alert('Импортировано');
-      }catch(e){ alert('Некорректный JSON'); }
-    }); }
-  }
-
-  document.addEventListener('click',(e)=>{ const btn = e.target.closest('[data-profile]'); if(btn){ openSeller(+btn.getAttribute('data-profile')); } });
-  function openSeller(id){
-    const s = read(LS.sellers,[]).find(x=>x.id===id); if(!s) return;
-    const m = document.createElement('div'); m.className='modal open';
-    const ava = s.avatar? `<img src="${escapeHTML(s.avatar)}" alt="">` : escapeHTML((s.name||'?')[0]||'?');
-    const chips = `
-      ${s.status?`<span class="chip">${escapeHTML(statusLabel(s.status))}</span>`:''}
-      ${s.flags?.verified?'<span class="chip">Проверен</span>':''}
-      ${s.flags?.escrow?'<span class="chip">Эскроу</span>':''}
-      ${s.flags?.rating4?'<span class="chip">4★+</span>':''}`;
-    const forumList = Array.isArray(s.forums)&&s.forums.length ? `<div style='margin-top:8px'>${s.forums.map(it=>`<a class="link-chip" href="${escapeHTML(it.url||'#')}" target="_blank" rel="noopener">🔗 ${escapeHTML(it.title||'Ссылка')}</a>`).join(' ')}</div>` : '';
-    m.innerHTML = `
-    <div class='panel'>
-      <div class='panel-head'><b>${escapeHTML(s.name)}</b><button class='x' data-close>×</button></div>
-      <div class='panel-body'>
-        <div class='row' style='gap:16px'>
-          <div class='avatar' style='width:72px;height:72px;font-size:28px'>${ava}</div>
-          <div>
-            <div class='muted'>Категория: ${escapeHTML(catLabel(s.cat))}</div>
-            <p style='margin:8px 0'>${escapeHTML(s.desc||'')}</p>
-            <div class='row' style='gap:8px'>${chips}</div>
-            <p class='muted' style='margin-top:8px'>Ник: ${escapeHTML(s.nick||'—')} • Опыт: ${escapeHTML(s.deposits||'—')} • Проекты: ${Number(s.deals||0)} • TG: ${s.tg? escapeHTML(s.tg) : '—'}</p>
-            ${forumList}
-          </div>
-        </div>
-      </div>
-    </div>`;
-    m.addEventListener('click',ev=>{ if(ev.target.matches('[data-close]')||ev.target===m) m.remove(); });
-    document.body.appendChild(m);
-  }
-
-  document.querySelectorAll('.modal').forEach(m=> m.addEventListener('click',e=>{ if(e.target===m) closeModal(m); }));
-
-  syncAuth();
-  // Применяем пользовательские настройки (цветовая палитра, баннеры, бегущая строка и т.д.)
-  applySettings();
-
-  (function(){
-    const out = document.getElementById('tg-count'); if(!out) return;
-    function fmt(n){ if(n>=1e6) return (n/1e6).toFixed(n%1e6?1:0).replace(/\.0$/,'')+'M'; if(n>=1e3) return (n/1e3).toFixed(n%1e3?1:0).replace(/\.0$/,'')+'K'; return String(n); }
-    function fetchText(u){ return fetch(u,{cache:'no-store'}).then(r=>{ if(!r.ok) throw 0; return r.text(); }); }
-    function extract(t){ const m = t.match(/([0-9][0-9\s\.,]*)\s*(подписчиков|подписчики|подписчика|subscribers|members)/i); return m? parseInt(m[1].replace(/[^0-9]/g,''),10):null; }
-    (async ()=>{
-      try{
-        out.textContent='…';
-        const urls=[
-          'https://r.jina.ai/http://t.me/OwnershipDesign',
-          'https://r.jina.ai/http://t.me/s/OwnershipDesign',
-          'https://r.jina.ai/https://t.me/OwnershipDesign'];
-        for(const u of urls){ try{ const t = await fetchText(u); const n = extract(t||''); if(n){ out.textContent = fmt(n); return; } }catch(e){} }
-        out.textContent='—';
-      }catch(e){ out.textContent='—'; }
-    })();
-  })();
-
-  (function(){
-    const btn = document.getElementById('copy-onion'); if(!btn) return;
-    function legacyCopy(text){ const ta=document.createElement('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); }
-    async function safeCopy(text){ try{ if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); } else { legacyCopy(text); } return true; } catch(e){ legacyCopy(text); return false; } }
-    btn.addEventListener('click', async ()=>{ const val = (document.getElementById('onion-field')?.textContent||'').trim(); const ok = await safeCopy(val); btn.textContent = ok?'✅':'❌'; setTimeout(()=>btn.textContent='📋',1200); });
-  })();
-
-  (function(){
-    const track = document.getElementById('partners-track'); if(!track) return;
-    const clones = Array.from(track.children).map(n=>n.cloneNode(true)); clones.forEach(n=>track.appendChild(n));
-    const style = document.createElement('style'); style.textContent='@keyframes partners-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}'; document.head.appendChild(style);
-    function setAnim(){ const gap=16; let total=0; Array.from(track.children).forEach(el=> total += el.getBoundingClientRect().width + gap); const half = total/2; const speed = 60; const dur = Math.max(20, Math.round(half/speed)); track.style.animation = `partners-slide ${dur}s linear infinite`; }
-    setTimeout(setAnim,0); window.addEventListener('resize',()=>{ clearTimeout(window.__p2); window.__p2=setTimeout(setAnim,150); });
-  })();
-  </script>
+  <!-- Подключаем внешний JavaScript -->
+  <script src="script.js"></script>
 </body>
 </html>
