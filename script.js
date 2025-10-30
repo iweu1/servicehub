@@ -41,6 +41,10 @@ const DEFAULT_SETTINGS = {
       {src:'', link:''}
     ]
   },
+  // Баннер между поиском и каталогом
+  midBanner: { src:'', link:'' },
+  // Баннер в боковой панели
+  sidebarBanner: { src:'', link:'' },
   palette: {
     accent:'',
     accentDark:'',
@@ -59,6 +63,12 @@ const DEFAULT_SETTINGS = {
     {key:'content', label:'Копирайтинг'},
     {key:'support', label:'Поддержка'}
   ]
+  ,
+  // Логотип и иконка вкладки. src задаётся через админ‑панель. Если пусто, используется стандартный logo.svg
+  logo: { src:'' },
+  favicon: { src:'' },
+  // Текст уведомления, отображаемого в верхней части страниц
+  notification: { text:'ℹ️ Покупайте услуги только у проверенных исполнителей и читайте отзывы.' }
 };
 
 function getSettings(){
@@ -78,6 +88,20 @@ function getSettings(){
     // копируем пользовательские категории, если они есть
     res.categories = st.categories.map(c => ({key:c.key, label:c.label}));
   }
+  // midBanner и sidebarBanner
+  if(st.midBanner){
+    res.midBanner.src = st.midBanner.src || res.midBanner.src;
+    res.midBanner.link = st.midBanner.link || res.midBanner.link;
+  }
+  if(st.sidebarBanner){
+    res.sidebarBanner.src = st.sidebarBanner.src || res.sidebarBanner.src;
+    res.sidebarBanner.link = st.sidebarBanner.link || res.sidebarBanner.link;
+  }
+  // логотип и иконка
+  if(st.logo && st.logo.src){ res.logo.src = st.logo.src; }
+  if(st.favicon && st.favicon.src){ res.favicon.src = st.favicon.src; }
+  // уведомление
+  if(st.notification && typeof st.notification.text === 'string'){ res.notification.text = st.notification.text; }
   return res;
 }
 function saveSettings(s){ write(SETTINGS_KEY, s); }
@@ -96,33 +120,73 @@ function applySettings(){
   // Обновить кольцо для фокуса
   document.documentElement.style.setProperty('--ring', accent2);
   document.documentElement.style.setProperty('--ring-soft', `rgba(${hexToRgb(accent2)},.25)`);
-  // Баннеры
-  const banners = st.banners && st.banners.slots? st.banners.slots : [];
-  banners.forEach((slot,i)=>{
-    const slotEl = document.querySelectorAll('.banner-slot')[i];
-    if(slotEl){
-      if(slot.src){
-        const linkStart = slot.link? `<a href="${escapeHTML(slot.link)}" target="_blank" rel="noopener">`: '';
-        const linkEnd = slot.link? '</a>': '';
-        slotEl.innerHTML = `${linkStart}<img src="${escapeHTML(slot.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
-      }
+  // Баннеры в шапке: обновляем все .banner-slot, циклично распределяя слоты
+  const banners = st.banners && st.banners.slots ? st.banners.slots : [];
+  const bannerEls = document.querySelectorAll('.banner-slot');
+  bannerEls.forEach((slotEl, idx) => {
+    const slot = banners[idx % banners.length] || {};
+    if(slot.src){
+      const linkStart = slot.link ? `<a href="${escapeHTML(slot.link)}" target="_blank" rel="noopener">` : '';
+      const linkEnd = slot.link ? '</a>' : '';
+      slotEl.innerHTML = `${linkStart}<img src="${escapeHTML(slot.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
+    } else {
+      // если изображение не задано, оставляем текст или убираем содержимое
+      // ничего не делаем, placeholder задаётся в HTML
     }
   });
-  // Бегущая строка
-  const tickerTrack = document.getElementById('ticker');
-  if(tickerTrack){
-    const items = Array.isArray(st.ticker.items)? st.ticker.items: DEFAULT_SETTINGS.ticker.items;
-    tickerTrack.innerHTML = '';
-    items.forEach(it=>{ const span=document.createElement('span'); span.textContent=it; tickerTrack.appendChild(span); });
-    // дублировать для бесконечной ленты
-    items.forEach(it=>{ const span=document.createElement('span'); span.textContent=it; tickerTrack.appendChild(span); });
-    tickerTrack.style.setProperty('--t', st.ticker.speed+'s');
+
+  // Баннер после поиска (mid-banner)
+  const midEl = document.getElementById('mid-banner');
+  if(midEl){
+    if(st.midBanner && st.midBanner.src){
+      const linkStart = st.midBanner.link ? `<a href="${escapeHTML(st.midBanner.link)}" target="_blank" rel="noopener">` : '';
+      const linkEnd = st.midBanner.link ? '</a>' : '';
+      midEl.innerHTML = `${linkStart}<img src="${escapeHTML(st.midBanner.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
+    } else {
+      midEl.textContent = 'Здесь может быть ваша реклама — 1168x120';
+    }
   }
+  // Баннер в боковой панели
+  const sbEl = document.getElementById('sidebar-banner');
+  if(sbEl){
+    if(st.sidebarBanner && st.sidebarBanner.src){
+      const linkStart = st.sidebarBanner.link ? `<a href="${escapeHTML(st.sidebarBanner.link)}" target="_blank" rel="noopener">` : '';
+      const linkEnd = st.sidebarBanner.link ? '</a>' : '';
+      sbEl.innerHTML = `${linkStart}<img src="${escapeHTML(st.sidebarBanner.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
+    } else {
+      sbEl.textContent = 'Здесь может быть ваша реклама — 280x120';
+    }
+  }
+  // Бегущая строка: обновляем все тикеры на странице
+  const tickerTracks = document.querySelectorAll('.ticker-track');
+  tickerTracks.forEach(track => {
+    const items = Array.isArray(st.ticker.items) ? st.ticker.items : DEFAULT_SETTINGS.ticker.items;
+    track.innerHTML = '';
+    items.forEach(it => { const span = document.createElement('span'); span.textContent = it; track.appendChild(span); });
+    // дублируем для бесконечной ленты
+    items.forEach(it => { const span = document.createElement('span'); span.textContent = it; track.appendChild(span); });
+    track.style.setProperty('--t', st.ticker.speed + 's');
+  });
   // Гарантия
   const gTitleEl = document.querySelector('.guarantee h3');
   const gSubEl = document.querySelector('.guarantee p.muted');
   if(gTitleEl) gTitleEl.textContent = st.guarantee.title;
   if(gSubEl) gSubEl.textContent = st.guarantee.subtitle;
+
+  // Логотип и иконка: обновляем изображение в шапке и favicon
+  const logoImgEl = document.querySelector('.logo img');
+  if(logoImgEl){
+    if(st.logo && st.logo.src){ logoImgEl.src = st.logo.src; }
+    else { logoImgEl.src = 'assets/logo.svg'; }
+  }
+  const faviconEl = document.getElementById('favicon-tag');
+  if(faviconEl){
+    if(st.favicon && st.favicon.src){ faviconEl.href = st.favicon.src; }
+    else { faviconEl.href = 'assets/logo.svg'; }
+  }
+  // Уведомление: обновляем текст в каждом уведомлении на странице
+  const notifText = st.notification && typeof st.notification.text === 'string' && st.notification.text.trim() ? st.notification.text : DEFAULT_SETTINGS.notification.text;
+  document.querySelectorAll('.notification span').forEach(sp=>{ sp.textContent = notifText; });
   // Заполнить формы настроек (если существуют)
   const fileInputs = [document.getElementById('banner-file-1'), document.getElementById('banner-file-2')];
   const urlInputs = [document.getElementById('banner-url-1'), document.getElementById('banner-url-2')];
@@ -137,6 +201,45 @@ function applySettings(){
       else{ previewEls[i].innerHTML=''; }
     }
   }
+
+  // заполняем поля баннера после поиска
+  const midUrlInput = document.getElementById('mid-banner-url');
+  const midLinkInput = document.getElementById('mid-banner-link');
+  const midPrev = document.getElementById('mid-banner-preview');
+  if(midUrlInput) midUrlInput.value = st.midBanner && st.midBanner.src && !st.midBanner.src.startsWith('data:') ? st.midBanner.src : '';
+  if(midLinkInput) midLinkInput.value = st.midBanner && st.midBanner.link ? st.midBanner.link : '';
+  if(midPrev){
+    if(st.midBanner && st.midBanner.src){ midPrev.innerHTML = `<img src="${escapeHTML(st.midBanner.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:6px">`; }
+    else{ midPrev.innerHTML = ''; }
+  }
+  // заполняем поля баннера в боковой панели
+  const sbUrlInput = document.getElementById('sidebar-banner-url');
+  const sbLinkInput = document.getElementById('sidebar-banner-link');
+  const sbPrev = document.getElementById('sidebar-banner-preview');
+  if(sbUrlInput) sbUrlInput.value = st.sidebarBanner && st.sidebarBanner.src && !st.sidebarBanner.src.startsWith('data:') ? st.sidebarBanner.src : '';
+  if(sbLinkInput) sbLinkInput.value = st.sidebarBanner && st.sidebarBanner.link ? st.sidebarBanner.link : '';
+  if(sbPrev){
+    if(st.sidebarBanner && st.sidebarBanner.src){ sbPrev.innerHTML = `<img src="${escapeHTML(st.sidebarBanner.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:6px">`; }
+    else{ sbPrev.innerHTML = ''; }
+  }
+  // логотип и иконка: заполняем поля формы
+  const logoUrlInput = document.getElementById('logo-url');
+  const logoPrev = document.getElementById('logo-preview');
+  if(logoUrlInput) logoUrlInput.value = (st.logo && st.logo.src && !st.logo.src.startsWith('data:')) ? st.logo.src : '';
+  if(logoPrev){
+    if(st.logo && st.logo.src){ logoPrev.innerHTML = `<img src="${escapeHTML(st.logo.src)}" alt="логотип" style="max-width:100%;height:auto;border-radius:6px">`; }
+    else { logoPrev.innerHTML = ''; }
+  }
+  const favUrlInput = document.getElementById('favicon-url');
+  const favPrev = document.getElementById('favicon-preview');
+  if(favUrlInput) favUrlInput.value = (st.favicon && st.favicon.src && !st.favicon.src.startsWith('data:')) ? st.favicon.src : '';
+  if(favPrev){
+    if(st.favicon && st.favicon.src){ favPrev.innerHTML = `<img src="${escapeHTML(st.favicon.src)}" alt="иконка" style="max-width:100%;height:auto;border-radius:6px">`; }
+    else { favPrev.innerHTML = ''; }
+  }
+  // уведомление: заполняем поле текста
+  const notifInput = document.getElementById('notification-text');
+  if(notifInput) notifInput.value = st.notification && typeof st.notification.text === 'string' ? st.notification.text : DEFAULT_SETTINGS.notification.text;
   // бегущая строка формы
   const tickerItemsInput = document.getElementById('ticker-items');
   const tickerSpeedInput = document.getElementById('ticker-speed');
@@ -179,10 +282,10 @@ function toHex(col){
     {u:'user',p:'user',role:'user',created: now}
   ];
   const sellersSeed = [
-    {id:1,name:'WebDesignPro',nick:'admin',desc:'Создаю современные и адаптивные сайты. Опыт более 5 лет.',cat:'design',status:'verified',flags:{verified:true,escrow:true,rating4:true},avatar:'',deposits:'фриланс: 5 лет',deals:42,tg:'@webdesignpro',forums:[{title:'Behance',url:'https://behance.net/user1'},{title:'Dribbble',url:'https://dribbble.com/user1'}],created: now,blocked:false},
-    {id:2,name:'CodeMaster',nick:'user',desc:'Разработка веб‑приложений под ключ. Node.js, Python.',cat:'programming',status:'seller',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'студия: 3 года',deals:15,tg:'@codemaster',forums:[{title:'GitHub',url:'https://github.com/user2'}],created: now,blocked:false},
-    {id:3,name:'MarketGuru',nick:'user',desc:'Помогаю компаниям расти с помощью эффективного маркетинга.',cat:'marketing',status:'unverified',flags:{verified:false,escrow:false,rating4:false},avatar:'',deposits:'—',deals:0,tg:'@marketguru',forums:[],created: now,blocked:false},
-    {id:4,name:'SEOExpert',nick:'admin',desc:'Оптимизация сайтов для поисковых систем. Аналитика трафика.',cat:'seo',status:'recruiter',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'агентство: 4 года',deals:7,tg:'@seoexpert',forums:[{title:'Portfolio',url:'https://portfolio.example/seoexpert'}],created: now,blocked:false}
+    {id:1,name:'WebDesignPro',nick:'admin',desc:'Создаю современные и адаптивные сайты. Опыт более 5 лет.',cat:'design',status:'verified',flags:{verified:true,escrow:true,rating4:true},avatar:'',deposits:'фриланс: 5 лет',deals:42,tg:'@webdesignpro',forums:[{title:'Behance',url:'https://behance.net/user1'},{title:'Dribbble',url:'https://dribbble.com/user1'}],created: now,blocked:false,pending:false},
+    {id:2,name:'CodeMaster',nick:'user',desc:'Разработка веб‑приложений под ключ. Node.js, Python.',cat:'programming',status:'seller',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'студия: 3 года',deals:15,tg:'@codemaster',forums:[{title:'GitHub',url:'https://github.com/user2'}],created: now,blocked:false,pending:false},
+    {id:3,name:'MarketGuru',nick:'user',desc:'Помогаю компаниям расти с помощью эффективного маркетинга.',cat:'marketing',status:'unverified',flags:{verified:false,escrow:false,rating4:false},avatar:'',deposits:'—',deals:0,tg:'@marketguru',forums:[],created: now,blocked:false,pending:false},
+    {id:4,name:'SEOExpert',nick:'admin',desc:'Оптимизация сайтов для поисковых систем. Аналитика трафика.',cat:'seo',status:'recruiter',flags:{verified:true,escrow:false,rating4:true},avatar:'',deposits:'агентство: 4 года',deals:7,tg:'@seoexpert',forums:[{title:'Portfolio',url:'https://portfolio.example/seoexpert'}],created: now,blocked:false,pending:false}
   ];
   const existingUsers = read(LS.users);
   if(!Array.isArray(existingUsers) || existingUsers.length===0) write(LS.users, usersSeed);
@@ -200,8 +303,21 @@ function setSession(s){ if(s) write(LS.session,s); else localStorage.removeItem(
 
 function syncAuth(){
   const s = getSession();
-  if(s){ authBox.classList.add('hidden'); userBox.classList.remove('hidden'); uName.textContent = s.u + (s.role==='admin'? ' (admin)':'' ); navAdmin.hidden = s.role!=='admin'; }
-  else { userBox.classList.add('hidden'); authBox.classList.remove('hidden'); navAdmin.hidden = true; }
+  if(s){
+    authBox.classList.add('hidden');
+    userBox.classList.remove('hidden');
+    uName.textContent = s.u + (s.role==='admin'? ' (admin)':'' );
+    navAdmin.hidden = s.role!=='admin';
+    const navProfile = document.getElementById('nav-profile');
+    if(navProfile) navProfile.style.display = '';
+  }
+  else {
+    userBox.classList.add('hidden');
+    authBox.classList.remove('hidden');
+    navAdmin.hidden = true;
+    const navProfile = document.getElementById('nav-profile');
+    if(navProfile) navProfile.style.display = 'none';
+  }
 }
 syncAuth();
 
@@ -249,7 +365,9 @@ function cardHTML(s){
 
 function renderCards(){
   let list = read(LS.sellers,[]).filter(s=>{
+    // не отображаем заблокированных или находящихся на модерации исполнителей
     if(s.blocked) return false;
+    if(s.pending) return false;
     const statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
     const catOk = currentFilter.cat==='all' || s.cat===currentFilter.cat;
     return statusOk && catOk;
@@ -350,6 +468,8 @@ id('c-save').addEventListener('click',()=>{
       item.deals = deals;
       item.tg = tg;
       item.forums = forums;
+      // при редактировании отправляем на модерацию
+      item.pending = true;
       write(LS.sellers,arr);
     }
     currentEditingId = null;
@@ -357,7 +477,8 @@ id('c-save').addEventListener('click',()=>{
     const idnew = (arr.reduce((m,x)=>Math.max(m,x.id),0)||0)+1;
     const status = 'unverified';
     const flags = {verified:false, escrow:false, rating4:false};
-    arr.push({id:idnew,name,nick:s.u,desc,cat,status,flags,avatar,deposits,deals,tg,forums,created:new Date().toISOString(),blocked:false});
+    // новая карточка автоматически помечается как ожидающая модерации
+    arr.push({id:idnew,name,nick:s.u,desc,cat,status,flags,avatar,deposits,deals,tg,forums,created:new Date().toISOString(),blocked:false,pending:true});
     write(LS.sellers,arr);
   }
   closeModal(cardModal);
@@ -573,6 +694,7 @@ function fillAdminSellers(){
           <button class="btn btn-danger" data-del-seller="${item.id}">Удалить</button>
           <button class="btn" data-block-seller="${item.id}">${item.blocked? 'Разблокировать' : 'Блокировать'}</button>
           <button class="btn" data-pin-seller="${item.id}">${(item.pinnedUntil && new Date(item.pinnedUntil).getTime() > Date.now()) ? 'Снять закреп' : 'Закрепить'}</button>
+          ${item.pending ? `<button class="btn" data-approve-seller="${item.id}">Одобрить</button>` : ''}
         </td>
       </tr>`;
   }).join('');
@@ -622,6 +744,14 @@ function fillAdminSellers(){
       else { item.pinnedUntil = new Date(now + 30*24*60*60*1000).toISOString(); }
       write(LS.sellers,arr);
     }
+    fillAdminSellers(); renderCards();
+  }));
+  // одобрение модерации
+  tbody.querySelectorAll('[data-approve-seller]').forEach(btn=> btn.addEventListener('click',()=>{
+    const idd = +btn.getAttribute('data-approve-seller');
+    const arr = read(LS.sellers,[]);
+    const item = arr.find(x=> x.id===idd);
+    if(item){ item.pending = false; write(LS.sellers,arr); }
     fillAdminSellers(); renderCards();
   }));
   tbody.querySelectorAll('.sel-status').forEach(sel=> sel.addEventListener('change',()=>{
@@ -766,6 +896,58 @@ function fillAdminSettings(){
       saveSettings(st);
     }); }
   });
+
+  // Баннер после поиска (mid-banner)
+  const midFileInput = document.getElementById('mid-banner-file');
+  const midUrlInput2 = document.getElementById('mid-banner-url');
+  const midLinkInput2 = document.getElementById('mid-banner-link');
+  if(midFileInput && !midFileInput.dataset.bound){ midFileInput.dataset.bound='1'; midFileInput.addEventListener('change',()=>{
+      const f = midFileInput.files && midFileInput.files[0];
+      if(!f) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        st.midBanner.src = fr.result;
+        if(midUrlInput2) midUrlInput2.value='';
+        saveSettings(st);
+        applySettings();
+      };
+      fr.readAsDataURL(f);
+    }); }
+  if(midUrlInput2 && !midUrlInput2.dataset.bound){ midUrlInput2.dataset.bound='1'; midUrlInput2.addEventListener('input',()=>{
+      st.midBanner.src = normalizeURL(midUrlInput2.value.trim());
+      saveSettings(st);
+      applySettings();
+    }); }
+  if(midLinkInput2 && !midLinkInput2.dataset.bound){ midLinkInput2.dataset.bound='1'; midLinkInput2.addEventListener('input',()=>{
+      st.midBanner.link = midLinkInput2.value.trim();
+      saveSettings(st);
+    }); }
+
+  // Баннер в боковой панели
+  const sbFileInput = document.getElementById('sidebar-banner-file');
+  const sbUrlInput2 = document.getElementById('sidebar-banner-url');
+  const sbLinkInput2 = document.getElementById('sidebar-banner-link');
+  if(sbFileInput && !sbFileInput.dataset.bound){ sbFileInput.dataset.bound='1'; sbFileInput.addEventListener('change',()=>{
+      const f = sbFileInput.files && sbFileInput.files[0];
+      if(!f) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        st.sidebarBanner.src = fr.result;
+        if(sbUrlInput2) sbUrlInput2.value='';
+        saveSettings(st);
+        applySettings();
+      };
+      fr.readAsDataURL(f);
+    }); }
+  if(sbUrlInput2 && !sbUrlInput2.dataset.bound){ sbUrlInput2.dataset.bound='1'; sbUrlInput2.addEventListener('input',()=>{
+      st.sidebarBanner.src = normalizeURL(sbUrlInput2.value.trim());
+      saveSettings(st);
+      applySettings();
+    }); }
+  if(sbLinkInput2 && !sbLinkInput2.dataset.bound){ sbLinkInput2.dataset.bound='1'; sbLinkInput2.addEventListener('input',()=>{
+      st.sidebarBanner.link = sbLinkInput2.value.trim();
+      saveSettings(st);
+    }); }
   // бегущая строка
   const tickerItems = document.getElementById('ticker-items');
   const tickerSpeed = document.getElementById('ticker-speed');
@@ -892,6 +1074,122 @@ function fillAdminSettings(){
       alert('Категории сохранены');
     });
   }
+
+  // ----- Логотип и иконка -----
+  // Выбор файла для логотипа
+  const logoFile = document.getElementById('logo-file');
+  const logoUrl = document.getElementById('logo-url');
+  const logoPrevEl = document.getElementById('logo-preview');
+  const favFile = document.getElementById('favicon-file');
+  const favUrl = document.getElementById('favicon-url');
+  const favPrevEl = document.getElementById('favicon-preview');
+  if(logoFile && !logoFile.dataset.bound){
+    logoFile.dataset.bound = '1';
+    logoFile.addEventListener('change',()=>{
+      const f = logoFile.files && logoFile.files[0];
+      if(!f) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        st.logo.src = fr.result;
+        if(logoUrl) logoUrl.value='';
+        saveSettings(st);
+        applySettings();
+      };
+      fr.readAsDataURL(f);
+    });
+  }
+  if(logoUrl && !logoUrl.dataset.bound){
+    logoUrl.dataset.bound = '1';
+    logoUrl.addEventListener('input',()=>{
+      st.logo.src = normalizeURL(logoUrl.value.trim());
+      saveSettings(st);
+      applySettings();
+    });
+  }
+  // Файл favicon
+  if(favFile && !favFile.dataset.bound){
+    favFile.dataset.bound = '1';
+    favFile.addEventListener('change',()=>{
+      const f = favFile.files && favFile.files[0];
+      if(!f) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        st.favicon.src = fr.result;
+        if(favUrl) favUrl.value='';
+        saveSettings(st);
+        applySettings();
+      };
+      fr.readAsDataURL(f);
+    });
+  }
+  if(favUrl && !favUrl.dataset.bound){
+    favUrl.dataset.bound = '1';
+    favUrl.addEventListener('input',()=>{
+      st.favicon.src = normalizeURL(favUrl.value.trim());
+      saveSettings(st);
+      applySettings();
+    });
+  }
+  // ----- Уведомление -----
+  const notifInput2 = document.getElementById('notification-text');
+  if(notifInput2 && !notifInput2.dataset.bound){
+    notifInput2.dataset.bound = '1';
+    notifInput2.addEventListener('input',()=>{
+      st.notification.text = notifInput2.value;
+      saveSettings(st);
+      applySettings();
+    });
+  }
+}
+
+// Построить профиль пользователя
+function buildProfile(){
+  const profEl = document.getElementById('profile-info');
+  const session = getSession();
+  if(!profEl || !session){ return; }
+  const users = read(LS.users, []);
+  const user = users.find(u => u.u === session.u);
+  const sellers = read(LS.sellers, []).filter(x => x.nick === session.u && !x.blocked);
+  const approved = sellers.find(x => !x.pending);
+  const pending = sellers.find(x => x.pending);
+  let html = '';
+  html += `<p><b>Никнейм:</b> ${escapeHTML(session.u)}</p>`;
+  html += `<p><b>Роль:</b> ${escapeHTML(session.role)}</p>`;
+  html += `<p><b>Дата регистрации:</b> ${user && user.created ? escapeHTML(new Date(user.created).toLocaleDateString()) : '—'}</p>`;
+  if(approved){
+    html += `<h3 style="margin-top:16px">Ваша карточка</h3>`;
+    html += `<p><b>Название:</b> ${escapeHTML(approved.name)}</p>`;
+    html += `<p><b>Описание:</b> ${escapeHTML(approved.desc)}</p>`;
+    html += `<p><b>Категория:</b> ${escapeHTML(catLabel(approved.cat))}</p>`;
+    html += `<p><b>Опыт:</b> ${escapeHTML(approved.deposits || '—')}</p>`;
+    html += `<p><b>Проекты:</b> ${Number(approved.deals || 0)}</p>`;
+    html += `<p><b>Telegram:</b> ${approved.tg ? escapeHTML(approved.tg) : '—'}</p>`;
+    html += `<div style="margin-top:12px"><button class="btn" id="profile-edit-card">Редактировать карточку</button></div>`;
+  } else if(pending){
+    html += `<h3 style="margin-top:16px">Ваша карточка на модерации</h3>`;
+    html += `<p><b>Название:</b> ${escapeHTML(pending.name)}</p>`;
+    html += `<p><b>Описание:</b> ${escapeHTML(pending.desc)}</p>`;
+    html += `<p><b>Категория:</b> ${escapeHTML(catLabel(pending.cat))}</p>`;
+    html += `<p style="color:var(--warning);margin-top:4px;">Карточка ожидает модерации. После одобрения она появится в каталоге.</p>`;
+  } else {
+    html += `<p style="margin-top:16px">У вас пока нет карточки.</p>`;
+    html += `<div style="margin-top:8px"><button class="btn btn-primary" id="profile-add-card">Создать карточку</button></div>`;
+  }
+  profEl.innerHTML = html;
+  const editBtn = document.getElementById('profile-edit-card');
+  if(editBtn && approved){
+    editBtn.addEventListener('click',()=>{
+      // открываем редактор карточки без смены раздела
+      openEditSeller(approved.id);
+    });
+  }
+  const addBtn = document.getElementById('profile-add-card');
+  if(addBtn){
+    addBtn.addEventListener('click',()=>{
+      // открываем модальное окно создания карточки
+      document.getElementById('btn-add-card').click();
+    });
+  }
 }
 
 // Глобальный слушатель кликов для открытия профиля продавца.
@@ -984,13 +1282,16 @@ updateCategoriesUI();
   const homeSection = document.getElementById('home-section');
   const adsSection  = document.getElementById('ads-section');
   const howSection  = document.getElementById('how-section');
+  const profileSection = document.getElementById('profile-section');
   const navHome = document.getElementById('nav-home');
   const navAds  = document.getElementById('nav-ads');
   const navHow  = document.getElementById('nav-how');
+  const navProfile = document.getElementById('nav-profile');
   function showHome(){
     if(homeSection) homeSection.classList.remove('hidden');
     if(adsSection)  adsSection.classList.add('hidden');
     if(howSection) howSection.classList.add('hidden');
+    if(profileSection) profileSection.classList.add('hidden');
     document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
     if(navHome) navHome.classList.add('active');
     // Закрываем любые открытые модальные окна при смене раздела
@@ -1000,6 +1301,7 @@ updateCategoriesUI();
     if(homeSection) homeSection.classList.add('hidden');
     if(adsSection)  adsSection.classList.remove('hidden');
     if(howSection) howSection.classList.add('hidden');
+    if(profileSection) profileSection.classList.add('hidden');
     document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
     if(navAds) navAds.classList.add('active');
     // Закрываем открытые модальные окна при переходе
@@ -1009,18 +1311,65 @@ updateCategoriesUI();
     if(homeSection) homeSection.classList.add('hidden');
     if(adsSection)  adsSection.classList.add('hidden');
     if(howSection) howSection.classList.remove('hidden');
+    if(profileSection) profileSection.classList.add('hidden');
     document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
     if(navHow) navHow.classList.add('active');
     // Закрываем открытые модальные окна при переходе
     document.querySelectorAll('.modal.open').forEach(m=> closeModal(m));
   }
-  if(navHome) navHome.addEventListener('click', (e)=>{ e.preventDefault(); showHome(); });
-  if(navAds) navAds.addEventListener('click', (e)=>{ e.preventDefault(); showAds(); });
-  if(navHow) navHow.addEventListener('click', (e)=>{ e.preventDefault(); showHow(); });
+  function showProfile(){
+    if(homeSection) homeSection.classList.add('hidden');
+    if(adsSection) adsSection.classList.add('hidden');
+    if(howSection) howSection.classList.add('hidden');
+    if(profileSection) profileSection.classList.remove('hidden');
+    document.querySelectorAll('nav .nav-link').forEach(x=> x.classList.remove('active'));
+    if(navProfile) navProfile.classList.add('active');
+    document.querySelectorAll('.modal.open').forEach(m=> closeModal(m));
+    buildProfile();
+  }
   // клик по логотипу возвращает на главную
   const logoEl = document.querySelector('.logo');
   if(logoEl){
     logoEl.style.cursor = 'pointer';
-    logoEl.addEventListener('click',(e)=>{ e.preventDefault(); showHome(); });
+    // обработчик клика по логотипу будет назначен ниже вместе с хеш‑навигацией
   }
+
+  /**
+   * При навигации между разделами обновляем хеш в адресной строке.
+   * Это позволяет сохранять активную вкладку после перезагрузки (F5).
+   * Обработчик навигации устанавливает соответствующий хеш, а при
+   * загрузке страницы и изменении хеша вызываются нужные функции отображения.
+   */
+  function updateHash(target){
+    // не добавляем дубликаты, чтобы не создавать историю назад лишний раз
+    const current = window.location.hash.replace('#','');
+    if(current !== target){
+      window.location.hash = target;
+    }
+  }
+  // переопределяем обработчики клика по навигационным ссылкам
+  if(navHome) navHome.addEventListener('click', (e)=>{ e.preventDefault(); updateHash('home'); showHome(); });
+  if(navAds) navAds.addEventListener('click', (e)=>{ e.preventDefault(); updateHash('ads'); showAds(); });
+  if(navHow) navHow.addEventListener('click', (e)=>{ e.preventDefault(); updateHash('how'); showHow(); });
+  if(navProfile) navProfile.addEventListener('click', (e)=>{ e.preventDefault(); updateHash('profile'); showProfile(); });
+  if(logoEl) logoEl.addEventListener('click',(e)=>{ e.preventDefault(); updateHash('home'); showHome(); });
+
+  // функция инициализации отображения раздела в зависимости от хеша
+  function applyInitialHash(){
+    const hash = window.location.hash.replace('#','');
+    switch(hash){
+      case 'ads': showAds(); break;
+      case 'how': showHow(); break;
+      case 'profile':
+        // показываем профиль только если пользователь авторизован
+        if(getSession()) showProfile(); else showHome();
+        break;
+      case 'home':
+      default: showHome(); break;
+    }
+  }
+  // вызов при загрузке
+  applyInitialHash();
+  // обработчик изменения хеша (например при навигации кнопками браузера)
+  window.addEventListener('hashchange', applyInitialHash);
 })();

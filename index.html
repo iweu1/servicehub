@@ -6,6 +6,8 @@
   <title>ServiceHub • Легальный маркетплейс услуг</title>
   <!-- Подключаем внешний файл стилей, чтобы отделить CSS от HTML -->
   <link rel="stylesheet" href="style.css">
+  <!-- Иконка вкладки (favicon). Изменяется через настройки -->
+  <link rel="icon" id="favicon-tag" type="image/svg+xml" href="assets/logo.svg">
 </head>
 <body>
   <header>
@@ -19,6 +21,8 @@
           <li><a href="#home" class="nav-link active" id="nav-home">Главная</a></li>
           <li><a href="#ads" class="nav-link" id="nav-ads">Реклама</a></li>
           <li><a href="#how" class="nav-link" id="nav-how">Как попасть</a></li>
+          <!-- Ссылка на профиль видна только для авторизованных пользователей -->
+          <li><a href="#profile" class="nav-link" id="nav-profile" style="display:none">Профиль</a></li>
           <li><a href="#admin" class="nav-link" id="nav-admin" hidden>Админ‑панель</a></li>
         </ul>
       </nav>
@@ -74,14 +78,9 @@
         </div>
       </section>
 
-      <!-- Баннер между фильтрами и каталогом -->
-      <div class="mid-banner" style="margin-top:16px;">
-        <div class="mid-banner-content">
-          <span class="muted">Ваш баннер может быть здесь</span>
-          <div style="margin-top:12px">
-            <a class="btn" href="https://t.me/servicehub_support" target="_blank" rel="noopener">Перейти</a>
-          </div>
-        </div>
+      <!-- Баннер между поиском и каталогом. Его размер 1168x120, заменяется через админку -->
+      <div class="mid-banner" id="mid-banner" style="margin-top:16px;">
+        <span>Здесь может быть ваша реклама — 1168x120</span>
       </div>
 
       <div class="grid" style="margin-top:16px">
@@ -94,6 +93,9 @@
             <li data-status="recruiter">Рекрутер</li>
             <li data-status="unverified">Не проверен</li>
           </ul>
+
+          <!-- Баннер в боковой панели между статусами и категориями. Размер 280x120 -->
+          <div class="sidebar-banner" id="sidebar-banner">Здесь может быть ваша реклама — 280x120</div>
           <h3>Категории <button class="toggle" data-toggle="#cats">Скрыть</button></h3>
           <ul id="cats" class="list-plain">
             <li data-cat="all" class="active">Все категории</li>
@@ -132,9 +134,7 @@
           <section class="info-card" aria-label="Информация">
             <div class="info-head">ℹ️ О проекте</div>
             <div class="info-body">
-              <!-- Информационный текст о ServiceHub -->
-              <p>ServiceHub — это платформа для поиска и размещения легальных услуг.</p>
-              <p>Мы выступаем за честное сотрудничество и прозрачность.</p>
+              <!-- Текст о проекте убран для лаконичного вида. -->
             </div>
           </section>
 
@@ -178,7 +178,34 @@
 
     <!-- рекламная страница -->
     <section id="ads-section" class="hidden" style="padding-top:24px">
-      <h2 style="margin:0 0 12px">Реклама</h2>
+      <!-- Верхние блоки: уведомление, бегущая строка, баннеры и гарантия, как на главной. Поиск здесь отсутствует -->
+      <div class="notification" role="status" style="margin-top:16px">
+        <span>ℹ️ Покупайте услуги только у проверенных исполнителей и читайте отзывы.</span>
+        <button class="x" aria-label="Закрыть" onclick="this.closest('.notification').remove()">×</button>
+      </div>
+      <div class="ticker" style="margin-top:12px">
+        <div class="ticker-track"></div>
+      </div>
+      <div class="header-banners">
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+      </div>
+      <section class="guarantee" aria-label="Гарантии и безопасность">
+        <div>
+          <h3 style="margin:0 0 6px">Безопасные сделки и честные исполнители</h3>
+          <p class="muted" style="margin:0">Мы поддерживаем безопасные платежи и прозрачные условия работы.</p>
+          <div class="row" style="gap:8px;margin-top:10px">
+            <span class="chip">🔒 Защита</span>
+            <span class="chip">⚡ Быстрые выплаты</span>
+            <span class="chip">🧾 Прозрачные комиссии</span>
+          </div>
+        </div>
+        <div class="g-actions">
+          <button class="btn btn-primary">Подробнее</button>
+        </div>
+      </section>
+
+      <h2 style="margin:24px 0 12px">Реклама</h2>
       <div class="info-grid">
         <section class="info-card">
           <div class="info-head">🏅 Покупка статуса</div>
@@ -219,9 +246,69 @@
       </div>
     </section>
 
+    <!-- страница профиля пользователя -->
+    <section id="profile-section" class="hidden" style="padding-top:24px">
+      <!-- Верхние блоки такие же, как на главной (без поиска). Поиск скрыт для профиля -->
+      <div class="notification" role="status" style="margin-top:16px">
+        <span>ℹ️ Покупайте услуги только у проверенных исполнителей и читайте отзывы.</span>
+        <button class="x" aria-label="Закрыть" onclick="this.closest('.notification').remove()">×</button>
+      </div>
+      <div class="ticker" style="margin-top:12px">
+        <div class="ticker-track"></div>
+      </div>
+      <div class="header-banners">
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+      </div>
+      <section class="guarantee" aria-label="Гарантии и безопасность">
+        <div>
+          <h3 style="margin:0 0 6px">Безопасные сделки и честные исполнители</h3>
+          <p class="muted" style="margin:0">Мы поддерживаем безопасные платежи и прозрачные условия работы.</p>
+          <div class="row" style="gap:8px;margin-top:10px">
+            <span class="chip">🔒 Защита</span>
+            <span class="chip">⚡ Быстрые выплаты</span>
+            <span class="chip">🧾 Прозрачные комиссии</span>
+          </div>
+        </div>
+        <div class="g-actions">
+          <button class="btn btn-primary">Подробнее</button>
+        </div>
+      </section>
+
+      <h2 style="margin:24px 0 12px">Профиль пользователя</h2>
+      <div id="profile-info" class="col" style="gap:12px"></div>
+    </section>
+
     <!-- страница «Как попасть в каталог» -->
     <section id="how-section" class="hidden" style="padding-top:24px">
-      <h2 style="margin:0 0 12px">Как попасть в каталог</h2>
+      <!-- Верхние блоки как на главной (без поиска) -->
+      <div class="notification" role="status" style="margin-top:16px">
+        <span>ℹ️ Покупайте услуги только у проверенных исполнителей и читайте отзывы.</span>
+        <button class="x" aria-label="Закрыть" onclick="this.closest('.notification').remove()">×</button>
+      </div>
+      <div class="ticker" style="margin-top:12px">
+        <div class="ticker-track"></div>
+      </div>
+      <div class="header-banners">
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+        <div class="banner-slot">Здесь может быть ваша реклама — 578x120</div>
+      </div>
+      <section class="guarantee" aria-label="Гарантии и безопасность">
+        <div>
+          <h3 style="margin:0 0 6px">Безопасные сделки и честные исполнители</h3>
+          <p class="muted" style="margin:0">Мы поддерживаем безопасные платежи и прозрачные условия работы.</p>
+          <div class="row" style="gap:8px;margin-top:10px">
+            <span class="chip">🔒 Защита</span>
+            <span class="chip">⚡ Быстрые выплаты</span>
+            <span class="chip">🧾 Прозрачные комиссии</span>
+          </div>
+        </div>
+        <div class="g-actions">
+          <button class="btn btn-primary">Подробнее</button>
+        </div>
+      </section>
+
+      <h2 style="margin:24px 0 12px">Как попасть в каталог</h2>
       <div class="col" style="gap:12px">
         <p>Чтобы разместить свою услугу в каталоге ServiceHub, выполните несколько простых шагов:</p>
         <ol style="margin:0 0 12px 18px;padding:0">
@@ -397,6 +484,28 @@
                 </div>
               </div>
             </section>
+
+            <!-- Баннер между поиском и каталогом -->
+            <section>
+              <h4>Баннер после поиска</h4>
+              <div class="col" style="gap:6px">
+                <input type="file" id="mid-banner-file" accept="image/*" />
+                <input class="field" id="mid-banner-url" placeholder="URL изображения" />
+                <input class="field" id="mid-banner-link" placeholder="Ссылка при клике" />
+                <div id="mid-banner-preview" class="muted" style="font-size:12px"></div>
+              </div>
+            </section>
+
+            <!-- Баннер в боковой панели -->
+            <section>
+              <h4>Баннер в боковой панели</h4>
+              <div class="col" style="gap:6px">
+                <input type="file" id="sidebar-banner-file" accept="image/*" />
+                <input class="field" id="sidebar-banner-url" placeholder="URL изображения" />
+                <input class="field" id="sidebar-banner-link" placeholder="Ссылка при клике" />
+                <div id="sidebar-banner-preview" class="muted" style="font-size:12px"></div>
+              </div>
+            </section>
             <!-- Бегущая строка -->
             <section>
               <h4>Бегущая строка</h4>
@@ -448,6 +557,28 @@
             <button class="btn" id="add-cat">Добавить</button>
             <button class="btn btn-primary" id="save-cat">Сохранить</button>
           </div>
+        </section>
+
+        <!-- Логотип и иконка -->
+        <section>
+          <h4>Логотип и иконка</h4>
+          <div class="col" style="gap:6px">
+            <label>Логотип (рекомендуемый размер 36×36)</label>
+            <input type="file" id="logo-file" accept="image/*" />
+            <input class="field" id="logo-url" placeholder="URL логотипа" />
+            <div id="logo-preview" class="muted" style="font-size:12px"></div>
+            <label>Иконка вкладки (favicon, 32×32)</label>
+            <input type="file" id="favicon-file" accept="image/*" />
+            <input class="field" id="favicon-url" placeholder="URL иконки" />
+            <div id="favicon-preview" class="muted" style="font-size:12px"></div>
+          </div>
+        </section>
+
+        <!-- Уведомление -->
+        <section>
+          <h4>Уведомление</h4>
+          <label>Текст уведомления</label>
+          <input class="field" id="notification-text" placeholder="Введите текст уведомления" />
         </section>
           </div>
         </div>

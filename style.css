@@ -196,9 +196,15 @@ nav a:hover {
 }
 
 /* Стиль закрепленных карточек */
+/* Для закреплённой карточки используем увеличенную толщину рамки и ту же
+   цветовую схему, что и для обычных карточек. Цветовое кольцо убрано,
+   чтобы не оставалось лишней синей полосы. */
+/* Стиль закрепленных карточек: используем стандартную толщину рамки,
+   усиливаем тень и избегаем цветных обводок, чтобы не появлялась лишняя полоса. */
 .card.pinned {
-  border-width: 2px;
-  border-color: var(--accent);
+  border-width: 1px;
+  border-color: var(--border);
+  /* усиливаем тень, чтобы закрепённая карточка выделялась */
   box-shadow: var(--shadow-2);
 }
 
@@ -368,7 +374,8 @@ nav a:hover {
   gap: 12px;
   align-items: center;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
+  /* убираем разделительную линию между шапкой и телом карточки */
+  border-bottom: none;
 }
 
 .avatar {
@@ -501,7 +508,8 @@ footer {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid var(--border);
+  /* Убираем разделительную линию между шапкой карточки и телом, чтобы не оставалось лишней полосы */
+  border-bottom: none;
 }
 
 .panel-body {
@@ -624,7 +632,7 @@ footer {
 .notification {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* центрируем текст уведомления, крестик уходит вправо */
   padding: 10px 14px;
   background: linear-gradient(180deg, #fde68a, #f59e0b);
   color: #111827;
@@ -633,6 +641,15 @@ footer {
   box-shadow: var(--shadow-1);
   font-weight: 700;
   margin-top: 16px;
+}
+
+/* В уведомлении растягиваем текст и центрируем, кнопка закрытия уходит вправо */
+.notification span {
+  flex: 1;
+  text-align: center;
+}
+.notification .x {
+  margin-left: auto;
 }
 
 .header-banners {
@@ -834,9 +851,10 @@ footer {
     grid-template-columns: 1fr;
   }
   .card {
-    /* На мобильных карточки можно развернуть вертикально */
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    /* На мобильных карточках не используем сетку,
+       оставляем flex‑разметку, чтобы убрать остаточную полосу */
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -856,11 +874,4 @@ footer {
 #admin-modal .panel-body {
   flex: 1;
   overflow-y: auto;
-}
-
-/* Override pinned card style */
-.card.pinned {
-  border-width: 2px;
-  border-color: var(--border);
-  box-shadow: 0 0 0 2px var(--accent), var(--shadow-2);
 }
