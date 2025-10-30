@@ -24,6 +24,144 @@ function catLabel(v){
 }
 function statusLabel(v){ return ({verified:'Проверенный', seller:'Исполнитель', recruiter:'Рекрутер', unverified:'Не проверен', blocked:'Заблокирован'})[v] || 'Исполнитель'; }
 
+// Словарь переводов интерфейса. Дополняйте при необходимости.
+const TRANSLATIONS = {
+  ru: {
+    nav_home: 'Главная',
+    nav_ads: 'Реклама',
+    nav_how: 'Как попасть',
+    nav_profile: 'Профиль',
+    nav_admin: 'Админ‑панель',
+    guarantee_title: 'Безопасные сделки и честные исполнители',
+    guarantee_subtitle: 'Мы поддерживаем безопасные платежи и прозрачные условия работы.',
+    guarantee_btn: 'Подробнее',
+    search_placeholder: 'Поиск исполнителей, услуг, категорий…',
+    ads_heading: 'Реклама',
+    how_heading: 'Как попасть в каталог',
+    how_step_registration_title: '👤 Регистрация',
+    how_step_registration_desc: 'Создайте учётную запись или войдите в существующий аккаунт, чтобы получить доступ к кабинету исполнителя.',
+    how_step_card_title: '📇 Заполните карточку',
+    how_step_card_desc: 'Добавьте карточку исполнителя с описанием ваших услуг, опытом работы, реализованными проектами и контактами.',
+    how_step_moderation_title: '🔍 Модерация',
+    how_step_moderation_desc: 'Отправленная карточка поступит на проверку модератору. После одобрения она появится в каталоге.',
+    how_step_trust_title: '⭐ Повышение доверия',
+    how_step_trust_desc: 'Для большего доверия аудитории приобретите статус «Проверенный» и закрепите карточку в верхней части каталога.',
+    how_cta_text: 'Если у вас остались вопросы, наша служба поддержки всегда готова помочь.',
+    how_cta_btn: 'Написать в Telegram',
+    ads_card_status_title: '🏅 Покупка статуса',
+    ads_card_status_desc: 'Получите статус «Проверенный» или «Рекрутер»',
+    ads_card_pin_title: '📌 Закреп строчки продавца',
+    ads_card_pin_desc: 'Ваша карточка всегда сверху',
+    ads_card_banner_title: '🖼️ Покупка баннера в шапке',
+    ads_card_banner_desc: 'Реклама в заголовке каталога',
+    ads_card_ticker_title: '📢 Покупка бегущей строки',
+    ads_card_ticker_desc: 'Ваш текст увидят все',
+    how_heading_short: 'Как попасть'
+  },
+  en: {
+    nav_home: 'Home',
+    nav_ads: 'Advertising',
+    nav_how: 'How to join',
+    nav_profile: 'Profile',
+    nav_admin: 'Admin',
+    guarantee_title: 'Safe deals and honest contractors',
+    guarantee_subtitle: 'We support secure payments and transparent terms.',
+    guarantee_btn: 'Learn more',
+    search_placeholder: 'Search services, providers…',
+    ads_heading: 'Advertising',
+    how_heading: 'How to join the directory',
+    how_step_registration_title: '👤 Sign up',
+    how_step_registration_desc: 'Create an account or log in to gain access to your performer dashboard.',
+    how_step_card_title: '📇 Fill out your card',
+    how_step_card_desc: 'Add a performer card with descriptions of your services, work experience, completed projects, and contacts.',
+    how_step_moderation_title: '🔍 Moderation',
+    how_step_moderation_desc: 'Submitted card will be reviewed by the moderator. After approval it appears in the catalog.',
+    how_step_trust_title: '⭐ Increase trust',
+    how_step_trust_desc: 'To gain more trust from the audience, purchase a "Verified" status and pin your card at the top of the catalog.',
+    how_cta_text: 'If you have any questions, our support team is always ready to help.',
+    how_cta_btn: 'Contact us on Telegram',
+    ads_card_status_title: '🏅 Purchase status',
+    ads_card_status_desc: 'Get "Verified" or "Recruiter" status',
+    ads_card_pin_title: '📌 Pin your listing',
+    ads_card_pin_desc: 'Your card always stays on top',
+    ads_card_banner_title: '🖼️ Purchase a header banner',
+    ads_card_banner_desc: 'Advertising in the catalog header',
+    ads_card_ticker_title: '📢 Purchase ticker',
+    ads_card_ticker_desc: 'Your text will be seen by everyone',
+    how_heading_short: 'How to join'
+  }
+};
+
+// текущий язык интерфейса
+let currentLanguage;
+// глобальная переменная для поискового запроса. Используется для фильтрации исполнителей по имени, описанию и другим полям
+let searchQuery = '';
+
+// Применить выбранный язык ко всем элементам страницы
+function applyLanguage(lang){
+  currentLanguage = lang;
+  const tr = TRANSLATIONS[lang] || TRANSLATIONS.ru;
+  // Навигация
+  const navHome = document.getElementById('nav-home'); if(navHome) navHome.textContent = tr.nav_home;
+  const navAds = document.getElementById('nav-ads'); if(navAds) navAds.textContent = tr.nav_ads;
+  const navHow = document.getElementById('nav-how'); if(navHow) navHow.textContent = tr.nav_how;
+  const navProfile = document.getElementById('nav-profile'); if(navProfile) navProfile.textContent = tr.nav_profile;
+  const navAdmin = document.getElementById('nav-admin'); if(navAdmin) navAdmin.textContent = tr.nav_admin;
+  // Переключатель языка показывает другую локаль
+  const langToggle = document.getElementById('lang-toggle');
+  if(langToggle) langToggle.textContent = lang === 'ru' ? 'EN' : 'RU';
+  // Placeholder поиска
+  const searchInput = document.getElementById('search-input');
+  if(searchInput) searchInput.placeholder = tr.search_placeholder;
+  // Гарантийный блок (если используется дефолтный текст)
+  document.querySelectorAll('.guarantee h3').forEach(el => { if(el) el.textContent = tr.guarantee_title; });
+  document.querySelectorAll('.guarantee p.muted').forEach(el => { if(el) el.textContent = tr.guarantee_subtitle; });
+  // Кнопка гарантий (если не переопределена в настройках)
+  document.querySelectorAll('.guarantee .guarantee-btn').forEach(el => { if(el) el.textContent = tr.guarantee_btn; });
+  // Заголовки разделов
+  const adsHeading = document.querySelector('#ads-section h2'); if(adsHeading) adsHeading.textContent = tr.ads_heading;
+  const howHeading = document.querySelector('#how-section h2'); if(howHeading) howHeading.textContent = tr.how_heading;
+  // Карточки рекламы
+  const adsCards = document.querySelectorAll('#ads-section .info-card');
+  if(adsCards.length >= 4){
+    const keys = [
+      ['ads_card_status_title','ads_card_status_desc'],
+      ['ads_card_pin_title','ads_card_pin_desc'],
+      ['ads_card_banner_title','ads_card_banner_desc'],
+      ['ads_card_ticker_title','ads_card_ticker_desc']
+    ];
+    adsCards.forEach((card, idx) => {
+      const head = card.querySelector('.info-head');
+      const bodyP = card.querySelector('.info-body p');
+      const k = keys[idx];
+      if(head && tr[k[0]]) head.textContent = tr[k[0]];
+      if(bodyP && tr[k[1]]) bodyP.textContent = tr[k[1]];
+    });
+  }
+  // Карточки «Как попасть»
+  const howCards = document.querySelectorAll('#how-section .info-card');
+  if(howCards.length >= 4){
+    const keys = [
+      ['how_step_registration_title','how_step_registration_desc'],
+      ['how_step_card_title','how_step_card_desc'],
+      ['how_step_moderation_title','how_step_moderation_desc'],
+      ['how_step_trust_title','how_step_trust_desc']
+    ];
+    howCards.forEach((card, idx) => {
+      const head = card.querySelector('.info-head');
+      const bodyP = card.querySelector('.info-body p');
+      const k = keys[idx];
+      if(head && tr[k[0]]) head.textContent = tr[k[0]];
+      if(bodyP && tr[k[1]]) bodyP.textContent = tr[k[1]];
+    });
+  }
+  // Текст и кнопка внизу страницы «Как попасть»
+  const howCtaP = document.querySelector('#how-section .muted');
+  if(howCtaP && tr.how_cta_text) howCtaP.textContent = tr.how_cta_text;
+  const howCtaBtn = document.querySelector('#how-section a.btn');
+  if(howCtaBtn && tr.how_cta_btn) howCtaBtn.textContent = tr.how_cta_btn;
+}
+
 // Ключ для настроек и значения по умолчанию
 const SETTINGS_KEY = 'sd_settings';
 const DEFAULT_SETTINGS = {
@@ -54,6 +192,13 @@ const DEFAULT_SETTINGS = {
     title:'Безопасные сделки и честные исполнители',
     subtitle:'Мы поддерживаем безопасные платежи и прозрачные условия работы.'
   },
+  // Текст и ссылка для кнопки в блоке гарантий
+  guaranteeButton: {
+    text:'Подробнее',
+    link:'#'
+  },
+  // Язык интерфейса (ru или en)
+  language: 'ru',
   // Категории по умолчанию. Каждая категория имеет ключ и отображаемое имя.
   categories: [
     {key:'design', label:'Дизайн'},
@@ -174,6 +319,21 @@ function applySettings(){
   if(gTitleEl) gTitleEl.textContent = st.guarantee.title;
   if(gSubEl) gSubEl.textContent = st.guarantee.subtitle;
 
+  // Кнопка «Подробнее» в секции гарантий: текст и ссылка из настроек
+  const gBtns = document.querySelectorAll('.guarantee .guarantee-btn');
+  gBtns.forEach(btn => {
+    const text = (st.guaranteeButton && st.guaranteeButton.text) ? st.guaranteeButton.text : DEFAULT_SETTINGS.guaranteeButton.text;
+    const link = (st.guaranteeButton && st.guaranteeButton.link) ? st.guaranteeButton.link : DEFAULT_SETTINGS.guaranteeButton.link;
+    btn.textContent = text;
+    if(link){ btn.setAttribute('href', link); }
+    else { btn.removeAttribute('href'); }
+  });
+  // Заполняем поля формы настройки текста и ссылки кнопки гарантий
+  const gBtnTextInput = document.getElementById('guarantee-btn-text');
+  const gBtnLinkInput = document.getElementById('guarantee-btn-link');
+  if(gBtnTextInput) gBtnTextInput.value = (st.guaranteeButton && st.guaranteeButton.text) ? st.guaranteeButton.text : DEFAULT_SETTINGS.guaranteeButton.text;
+  if(gBtnLinkInput) gBtnLinkInput.value = (st.guaranteeButton && st.guaranteeButton.link) ? st.guaranteeButton.link : DEFAULT_SETTINGS.guaranteeButton.link;
+
   // Логотип и иконка: обновляем изображение в шапке и favicon
   const logoImgEl = document.querySelector('.logo img');
   if(logoImgEl){
@@ -258,6 +418,8 @@ function applySettings(){
   const gSubtitleInput = document.getElementById('guarantee-subtitle');
   if(gTitleInput) gTitleInput.value = st.guarantee.title;
   if(gSubtitleInput) gSubtitleInput.value = st.guarantee.subtitle;
+  // После применения всех настроек обновляем язык интерфейса
+  applyLanguage(st.language || 'ru');
 }
 
 // Вспомогательные функции: преобразование HEX в RGB и обратно
@@ -371,7 +533,19 @@ function renderCards(){
     if(s.pending) return false;
     const statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
     const catOk = currentFilter.cat==='all' || s.cat===currentFilter.cat;
-    return statusOk && catOk;
+    // Фильтрация по текстовому поисковому запросу
+    let searchOk = true;
+    if(searchQuery && searchQuery.length){
+      const q = searchQuery.toLowerCase();
+      const nameMatch = (s.name || '').toLowerCase().includes(q);
+      const descMatch = (s.desc || '').toLowerCase().includes(q);
+      const catMatch = catLabel(s.cat).toLowerCase().includes(q);
+      const tgMatch = (s.tg || '').toLowerCase().includes(q);
+      const depoMatch = (s.deposits || '').toLowerCase().includes(q);
+      const forumsMatch = Array.isArray(s.forums) ? s.forums.some(it => ((it.title||'').toLowerCase().includes(q)) || ((it.url||'').toLowerCase().includes(q))) : false;
+      searchOk = nameMatch || descMatch || catMatch || tgMatch || depoMatch || forumsMatch;
+    }
+    return statusOk && catOk && searchOk;
   });
   // Сортировка: закрепленные карточки (с неистёкшим pinnedUntil) первыми, затем по дате создания (новые сверху)
   const now = Date.now();
@@ -990,6 +1164,26 @@ function fillAdminSettings(){
     saveSettings(st);
     applySettings();
   }); }
+
+  // текст и ссылка кнопки в блоке гарантий
+  const gBtnTextInput2 = document.getElementById('guarantee-btn-text');
+  const gBtnLinkInput2 = document.getElementById('guarantee-btn-link');
+  if(gBtnTextInput2 && !gBtnTextInput2.dataset.bound){
+    gBtnTextInput2.dataset.bound='1';
+    gBtnTextInput2.addEventListener('input', ()=>{
+      st.guaranteeButton.text = gBtnTextInput2.value;
+      saveSettings(st);
+      applySettings();
+    });
+  }
+  if(gBtnLinkInput2 && !gBtnLinkInput2.dataset.bound){
+    gBtnLinkInput2.dataset.bound='1';
+    gBtnLinkInput2.addEventListener('input', ()=>{
+      st.guaranteeButton.link = gBtnLinkInput2.value.trim();
+      saveSettings(st);
+      applySettings();
+    });
+  }
   // экспорт
   const exportBtn = document.getElementById('export-json');
   if(exportBtn && !exportBtn.dataset.bound){ exportBtn.dataset.bound='1'; exportBtn.addEventListener('click',()=>{
@@ -1300,6 +1494,30 @@ updateCategoriesUI();
   setTimeout(setAnim,0); window.addEventListener('resize',()=>{ clearTimeout(window.__p2); window.__p2=setTimeout(setAnim,150); });
 })();
 
+// Поиск исполнителей: обновляем список при вводе или клике на кнопку
+(function(){
+  const input = document.getElementById('search-input');
+  const btn = document.getElementById('search-btn');
+  if(input){
+    input.addEventListener('input', ()=>{
+      searchQuery = input.value.trim().toLowerCase();
+      renderCards();
+    });
+    input.addEventListener('keypress', (e)=>{
+      if(e.key === 'Enter'){
+        searchQuery = input.value.trim().toLowerCase();
+        renderCards();
+      }
+    });
+  }
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      searchQuery = input ? input.value.trim().toLowerCase() : '';
+      renderCards();
+    });
+  }
+})();
+
 // Переключение между домашней и рекламной страницами
 (function(){
   const homeSection = document.getElementById('home-section');
@@ -1395,4 +1613,19 @@ updateCategoriesUI();
   applyInitialHash();
   // обработчик изменения хеша (например при навигации кнопками браузера)
   window.addEventListener('hashchange', applyInitialHash);
+})();
+
+// Обработчик смены языка. При клике на переключатель языка
+// меняем значение в настройках, сохраняем и повторно применяем настройки,
+// что автоматически обновит все переведённые элементы.
+(function(){
+  const toggle = document.getElementById('lang-toggle');
+  if(!toggle) return;
+  toggle.addEventListener('click', () => {
+    const st = getSettings();
+    const newLang = st.language === 'ru' ? 'en' : 'ru';
+    st.language = newLang;
+    saveSettings(st);
+    applySettings();
+  });
 })();
