@@ -1153,27 +1153,46 @@ function buildProfile(){
   const approved = sellers.find(x => !x.pending);
   const pending = sellers.find(x => x.pending);
   let html = '';
-  html += `<p><b>Никнейм:</b> ${escapeHTML(session.u)}</p>`;
-  html += `<p><b>Роль:</b> ${escapeHTML(session.role)}</p>`;
-  html += `<p><b>Дата регистрации:</b> ${user && user.created ? escapeHTML(new Date(user.created).toLocaleDateString()) : '—'}</p>`;
+  // Базовая карточка с информацией о пользователе
+  html += `<section class="info-card">
+    <div class="info-head">👤 Профиль</div>
+    <div class="info-body">
+      <p><b>Никнейм:</b> ${escapeHTML(session.u)}</p>
+      <p><b>Роль:</b> ${escapeHTML(session.role)}</p>
+      <p><b>Дата регистрации:</b> ${user && user.created ? escapeHTML(new Date(user.created).toLocaleDateString()) : '—'}</p>
+    </div>
+  </section>`;
   if(approved){
-    html += `<h3 style="margin-top:16px">Ваша карточка</h3>`;
-    html += `<p><b>Название:</b> ${escapeHTML(approved.name)}</p>`;
-    html += `<p><b>Описание:</b> ${escapeHTML(approved.desc)}</p>`;
-    html += `<p><b>Категория:</b> ${escapeHTML(catLabel(approved.cat))}</p>`;
-    html += `<p><b>Опыт:</b> ${escapeHTML(approved.deposits || '—')}</p>`;
-    html += `<p><b>Проекты:</b> ${Number(approved.deals || 0)}</p>`;
-    html += `<p><b>Telegram:</b> ${approved.tg ? escapeHTML(approved.tg) : '—'}</p>`;
-    html += `<div style="margin-top:12px"><button class="btn" id="profile-edit-card">Редактировать карточку</button></div>`;
+    html += `<section class="info-card" style="margin-top:16px">
+      <div class="info-head">🪪 Ваша карточка</div>
+      <div class="info-body">
+        <p><b>Название:</b> ${escapeHTML(approved.name)}</p>
+        <p><b>Описание:</b> ${escapeHTML(approved.desc)}</p>
+        <p><b>Категория:</b> ${escapeHTML(catLabel(approved.cat))}</p>
+        <p><b>Опыт:</b> ${escapeHTML(approved.deposits || '—')}</p>
+        <p><b>Проекты:</b> ${Number(approved.deals || 0)}</p>
+        <p><b>Telegram:</b> ${approved.tg ? escapeHTML(approved.tg) : '—'}</p>
+        <div style="margin-top:12px"><button class="btn" id="profile-edit-card">Редактировать карточку</button></div>
+      </div>
+    </section>`;
   } else if(pending){
-    html += `<h3 style="margin-top:16px">Ваша карточка на модерации</h3>`;
-    html += `<p><b>Название:</b> ${escapeHTML(pending.name)}</p>`;
-    html += `<p><b>Описание:</b> ${escapeHTML(pending.desc)}</p>`;
-    html += `<p><b>Категория:</b> ${escapeHTML(catLabel(pending.cat))}</p>`;
-    html += `<p style="color:var(--warning);margin-top:4px;">Карточка ожидает модерации. После одобрения она появится в каталоге.</p>`;
+    html += `<section class="info-card" style="margin-top:16px">
+      <div class="info-head">⌛ На модерации</div>
+      <div class="info-body">
+        <p><b>Название:</b> ${escapeHTML(pending.name)}</p>
+        <p><b>Описание:</b> ${escapeHTML(pending.desc)}</p>
+        <p><b>Категория:</b> ${escapeHTML(catLabel(pending.cat))}</p>
+        <p style="color:var(--warning);margin-top:4px;">Карточка ожидает модерации. После одобрения она появится в каталоге.</p>
+      </div>
+    </section>`;
   } else {
-    html += `<p style="margin-top:16px">У вас пока нет карточки.</p>`;
-    html += `<div style="margin-top:8px"><button class="btn btn-primary" id="profile-add-card">Создать карточку</button></div>`;
+    html += `<section class="info-card" style="margin-top:16px">
+      <div class="info-head">➕ Создание карточки</div>
+      <div class="info-body">
+        <p>У вас пока нет карточки исполнителя.</p>
+        <div style="margin-top:12px"><button class="btn btn-primary" id="profile-add-card">Создать карточку</button></div>
+      </div>
+    </section>`;
   }
   profEl.innerHTML = html;
   const editBtn = document.getElementById('profile-edit-card');
@@ -1206,7 +1225,7 @@ function openSeller(id){
   const m = document.createElement('div'); m.className='modal open';
   const ava = s.avatar? `<img src="${escapeHTML(s.avatar)}" alt="">` : escapeHTML((s.name||'?')[0]||'?');
   const chips = `
-      ${s.status?`<span class="chip">${escapeHTML(statusLabel(s.status))}</span>`:''}
+      ${s.status?`<span class="chip status-${escapeHTML(s.status)}">${escapeHTML(statusLabel(s.status))}</span>`:''}
       ${s.flags?.verified?'<span class="chip">Проверен</span>':''}
       ${s.flags?.escrow?'<span class="chip">Эскроу</span>':''}
       ${s.flags?.rating4?'<span class="chip">4★+</span>':''}`;
@@ -1216,13 +1235,16 @@ function openSeller(id){
     <div class='panel'>
       <div class='panel-head'><b>${escapeHTML(s.name)}</b><button class='x' data-close>×</button></div>
       <div class='panel-body'>
-        <div class='row' style='gap:16px'>
-          <div class='avatar' style='width:72px;height:72px;font-size:28px'>${ava}</div>
-          <div>
-            <div class='muted'>Категория: ${escapeHTML(catLabel(s.cat))}</div>
-            <p style='margin:8px 0'>${escapeHTML(s.desc||'')}</p>
-            <div class='row' style='gap:8px'>${chips}</div>
-            <p class='muted' style='margin-top:8px'>Ник: ${escapeHTML(s.nick||'—')} • Опыт: ${escapeHTML(s.deposits||'—')} • Проекты: ${Number(s.deals||0)} • TG: ${s.tg? escapeHTML(s.tg) : '—'}</p>
+        <div class='row' style='gap:16px;align-items:flex-start;'>
+          <div class='avatar' style='width:72px;height:72px;font-size:32px'>${ava}</div>
+          <div style='flex:1'>
+            <div class='row' style='gap:8px;flex-wrap:wrap'>${chips}</div>
+            <!-- Данные исполнителя с пиктограммами для улучшенного восприятия -->
+            <p class='muted' style='margin-top:8px'><span style='margin-right:4px'>📁</span><b>Категория:</b> ${escapeHTML(catLabel(s.cat))}</p>
+            <p style='margin:4px 0'><span style='margin-right:4px'>📝</span><b>Описание:</b> ${escapeHTML(s.desc||'—')}</p>
+            <p class='muted' style='margin:4px 0'><span style='margin-right:4px'>💼</span><b>Опыт:</b> ${escapeHTML(s.deposits||'—')}</p>
+            <p class='muted' style='margin:4px 0'><span style='margin-right:4px'>📊</span><b>Проекты:</b> ${Number(s.deals||0)}</p>
+            <p class='muted' style='margin:4px 0'><span style='margin-right:4px'>✈️</span><b>Телеграм:</b> ${s.tg ? escapeHTML(s.tg) : '—'}</p>
             ${forumList}
             ${s.tg ? `<div style='margin-top:12px'><a class="btn btn-primary" href="https://t.me/${escapeHTML(String(s.tg).replace(/^@/,''))}" target="_blank" rel="noopener">Написать в Telegram</a></div>` : ''}
           </div>

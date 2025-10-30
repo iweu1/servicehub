@@ -16,11 +16,15 @@
         <img src="assets/logo.svg" alt="ServiceHub logo" style="width:36px;height:36px" />
         <span id="brand">ServiceHub</span>
       </div>
-      <nav>
-        <ul>
+      <nav class="nav">
+        <!-- Левая часть навигации: основные разделы -->
+        <ul class="nav-left">
           <li><a href="#home" class="nav-link active" id="nav-home">Главная</a></li>
           <li><a href="#ads" class="nav-link" id="nav-ads">Реклама</a></li>
           <li><a href="#how" class="nav-link" id="nav-how">Как попасть</a></li>
+        </ul>
+        <!-- Правая часть навигации: профиль и админка -->
+        <ul class="nav-right">
           <!-- Ссылка на профиль видна только для авторизованных пользователей -->
           <li><a href="#profile" class="nav-link" id="nav-profile" style="display:none">Профиль</a></li>
           <li><a href="#admin" class="nav-link" id="nav-admin" hidden>Админ‑панель</a></li>
@@ -85,27 +89,34 @@
 
       <div class="grid" style="margin-top:16px">
         <aside class="sidebar">
-          <h3>Статусы <button class="toggle" data-toggle="#flt">Скрыть</button></h3>
-          <ul id="flt" class="list-plain">
-            <li data-status="all" class="active">Все исполнители</li>
-            <li data-status="verified">Проверенный</li>
-            <li data-status="seller">Исполнитель</li>
-            <li data-status="recruiter">Рекрутер</li>
-            <li data-status="unverified">Не проверен</li>
-          </ul>
+          <!-- Секция статусов -->
+          <section class="status-section">
+            <h3>Статусы <button class="toggle" data-toggle="#flt">Скрыть</button></h3>
+            <ul id="flt" class="list-plain">
+              <li data-status="all" class="active">Все исполнители</li>
+              <li data-status="verified">Проверенный</li>
+              <li data-status="seller">Исполнитель</li>
+              <li data-status="recruiter">Рекрутер</li>
+              <li data-status="unverified">Не проверен</li>
+            </ul>
+          </section>
 
           <!-- Баннер в боковой панели между статусами и категориями. Размер 280x120 -->
           <div class="sidebar-banner" id="sidebar-banner">Здесь может быть ваша реклама — 280x120</div>
-          <h3>Категории <button class="toggle" data-toggle="#cats">Скрыть</button></h3>
-          <ul id="cats" class="list-plain">
-            <li data-cat="all" class="active">Все категории</li>
-            <li data-cat="design">Дизайн</li>
-            <li data-cat="programming">Программирование</li>
-            <li data-cat="marketing">Маркетинг</li>
-            <li data-cat="seo">SEO</li>
-            <li data-cat="content">Копирайтинг</li>
-            <li data-cat="support">Поддержка</li>
-          </ul>
+
+          <!-- Секция категорий -->
+          <section class="category-section">
+            <h3>Категории <button class="toggle" data-toggle="#cats">Скрыть</button></h3>
+            <ul id="cats" class="list-plain">
+              <li data-cat="all" class="active">Все категории</li>
+              <li data-cat="design">Дизайн</li>
+              <li data-cat="programming">Программирование</li>
+              <li data-cat="marketing">Маркетинг</li>
+              <li data-cat="seo">SEO</li>
+              <li data-cat="content">Копирайтинг</li>
+              <li data-cat="support">Поддержка</li>
+            </ul>
+          </section>
         </aside>
 
         <section class="content">
@@ -276,7 +287,8 @@
       </section>
 
       <h2 style="margin:24px 0 12px">Профиль пользователя</h2>
-      <div id="profile-info" class="col" style="gap:12px"></div>
+      <!-- Сетка профиля. Использует класс profile-grid для двухколоночного расположения карточек -->
+      <div id="profile-info" class="profile-grid"></div>
     </section>
 
     <!-- страница «Как попасть в каталог» -->
@@ -309,18 +321,36 @@
       </section>
 
       <h2 style="margin:24px 0 12px">Как попасть в каталог</h2>
-      <div class="col" style="gap:12px">
-        <p>Чтобы разместить свою услугу в каталоге ServiceHub, выполните несколько простых шагов:</p>
-        <ol style="margin:0 0 12px 18px;padding:0">
-          <li>Зарегистрируйтесь на платформе или войдите в существующий аккаунт.</li>
-          <li>Добавьте карточку исполнителя, заполнив информацию о себе, опыте, проектах и контактах.</li>
-          <li>Ожидайте модерацию. После проверки ваша карточка появится в каталоге.</li>
-          <li>Для повышения доверия приобретите статус «Проверенный» и закрепите карточку вверху каталога.</li>
-        </ol>
-        <p>Если у вас возникли вопросы, свяжитесь с нашей службой поддержки по Telegram.</p>
-        <div style="margin-top:12px">
-          <a class="btn btn-primary" href="https://t.me/servicehub_support" target="_blank" rel="noopener">Написать в Telegram</a>
-        </div>
+      <!-- Используем сетку карточек для отображения шагов. Каждая карточка описывает отдельный этап -->
+      <div class="info-grid">
+        <section class="info-card">
+          <div class="info-head">👤 Регистрация</div>
+          <div class="info-body">
+            <p>Создайте учётную запись или войдите в существующий аккаунт, чтобы получить доступ к кабинету исполнителя.</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">📇 Заполните карточку</div>
+          <div class="info-body">
+            <p>Добавьте карточку исполнителя с описанием ваших услуг, опытом работы, реализованными проектами и контактами.</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">🔍 Модерация</div>
+          <div class="info-body">
+            <p>Отправленная карточка поступит на проверку модератору. После одобрения она появится в каталоге.</p>
+          </div>
+        </section>
+        <section class="info-card">
+          <div class="info-head">⭐ Повышение доверия</div>
+          <div class="info-body">
+            <p>Для большего доверия аудитории приобретите статус «Проверенный» и закрепите карточку в верхней части каталога.</p>
+          </div>
+        </section>
+      </div>
+      <div style="margin-top:16px">
+        <p class="muted">Если у вас остались вопросы, наша служба поддержки всегда готова помочь.</p>
+        <a class="btn btn-primary" href="https://t.me/servicehub_support" target="_blank" rel="noopener">Написать в Telegram</a>
       </div>
     </section>
   </main>

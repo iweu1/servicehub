@@ -118,6 +118,24 @@ nav a:hover {
   color: var(--text);
 }
 
+/* Новая структура навигации: левая и правая группы */
+nav.nav {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+nav .nav-left,
+nav .nav-right {
+  display: flex;
+  gap: 18px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+nav .nav-right {
+  margin-left: auto;
+}
+
 .auth {
   display: flex;
   gap: 8px;
@@ -239,7 +257,8 @@ nav a:hover {
 }
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-2);
+  /* усиливаем свечение: добавляем яркий ореол вокруг карточки при наведении */
+  box-shadow: var(--shadow-2), 0 0 0 2px var(--accent), 0 0 12px var(--accent-dark);
 }
 
 /* Межстраничный баннер в каталоге */
@@ -302,6 +321,14 @@ nav a:hover {
   align-items: center;
   justify-content: space-between;
   margin: 0 0 10px;
+}
+
+/* Отступы между секциями статусов, баннером и категорий внутри боковой панели */
+.status-section + .sidebar-banner,
+  .sidebar-banner + .category-section {
+  /* увеличиваем отступ между блоками статусов, баннера и категорий,
+   * чтобы визуально отделить эти секции друг от друга */
+  margin-top: 20px;
 }
 
 .toggle {
@@ -397,6 +424,30 @@ nav a:hover {
   object-fit: cover;
   border-radius: inherit;
   display: block;
+}
+
+/*
+ * Выравнивание текста в информационных карточках.
+ * Все абзацы внутри .info-body имеют равномерный вертикальный отступ,
+ * чтобы текст не прыгал и карточки выглядели аккуратно.
+ */
+.info-body p {
+  margin: 4px 0;
+}
+.info-body p:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * Сетка для раздела профиля.
+ * Используется на странице профиля, чтобы размещать карточки пользователя
+ * и его карточки исполнителя в удобном виде. На больших экранах это
+ * несколько колонок, на маленьких — одна.
+ */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 /* Детали карточки размещаются в отдельном блоке с малым шрифтом */
@@ -782,6 +833,13 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Списки внутри информационных карточек должны занимать всю ширину без
+ * дополнительных отступов. Это убирает лишние поля слева и сверху. */
+.info-body ul {
+  margin: 0;
+  padding-left: 0;
 }
 
 .partners {
