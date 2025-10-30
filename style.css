@@ -248,6 +248,7 @@ nav a:hover {
   align-items: center;
   justify-content: center;
   color: var(--muted-2);
+  text-align: center;
 }
 .mid-banner .mid-banner-content {
   display: flex;
@@ -255,6 +256,21 @@ nav a:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+/* Боковой баннер между статусами и категориями */
+.sidebar-banner {
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--elev-1), var(--elev-2));
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-2);
+  text-align: center;
+  margin: 12px 0;
+  padding: 12px;
 }
 
 /* Разметка двухколоночной сетки: фильтры слева, карточки справа */
@@ -490,6 +506,9 @@ footer {
 
 .panel-body {
   padding: 16px 18px;
+  /* Позволяем прокручивать содержимое админ‑панели при переполнении */
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
 }
 
  .x {
@@ -731,6 +750,14 @@ footer {
   flex: 1;
 }
 
+/* Убираем лишние отступы внутри информационных карточек */
+.info-body p {
+  margin: 0;
+}
+.info-body p + p {
+  margin-top: 8px;
+}
+
 .list-clean {
   list-style: none;
   margin: 0;
@@ -757,6 +784,15 @@ footer {
   overflow: hidden;
   position: relative;
   border-radius: 10px;
+}
+
+/* Оформление секций в админ‑панели */
+#admin-settings section {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--elev-1), var(--elev-2));
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .slider-track {
@@ -802,4 +838,22 @@ footer {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
   }
+}
+
+/*
+ * Расширяем админ‑панель до размера экрана и делаем её похожей на дешборд.
+ * Панель растягивается практически на весь экран, а её содержимое
+ * прокручивается независимо от остальной страницы.
+ */
+#admin-modal .panel {
+  width: 94vw;
+  max-width: 1100px;
+  height: 90vh;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+#admin-modal .panel-body {
+  flex: 1;
+  overflow-y: auto;
 }
