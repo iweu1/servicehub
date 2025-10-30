@@ -135,17 +135,18 @@ function applySettings(){
     }
   });
 
-  // Баннер после поиска (mid-banner)
-  const midEl = document.getElementById('mid-banner');
-  if(midEl){
+  // Баннер после поиска (mid-banner). Может быть несколько баннеров на разных страницах.
+  const midEls = document.querySelectorAll('.mid-banner');
+  midEls.forEach(midEl => {
     if(st.midBanner && st.midBanner.src){
       const linkStart = st.midBanner.link ? `<a href="${escapeHTML(st.midBanner.link)}" target="_blank" rel="noopener">` : '';
       const linkEnd = st.midBanner.link ? '</a>' : '';
       midEl.innerHTML = `${linkStart}<img src="${escapeHTML(st.midBanner.src)}" alt="баннер" style="max-width:100%;height:auto;border-radius:10px">${linkEnd}`;
     } else {
+      // Устанавливаем текст placeholder, если изображение не задано
       midEl.textContent = 'Здесь может быть ваша реклама — 1168x120';
     }
-  }
+  });
   // Баннер в боковой панели
   const sbEl = document.getElementById('sidebar-banner');
   if(sbEl){
