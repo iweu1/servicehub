@@ -857,3 +857,10 @@ footer {
   flex: 1;
   overflow-y: auto;
 }
+
+/* Override pinned card style */
+.card.pinned {
+  border-width: 2px;
+  border-color: var(--border);
+  box-shadow: 0 0 0 2px var(--accent), var(--shadow-2);
+}
