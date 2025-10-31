@@ -190,8 +190,10 @@ nav .nav-right {
 }
 
 /* Кнопка в блоке гарантий: делаем чуть шире */
+/* Кнопка в блоке гарантий: делаем шире и с минимальной шириной */
 .g-actions .btn {
-  min-width: 140px;
+  min-width: 160px;
+  text-align: center;
 }
 
 .chip {
@@ -269,6 +271,23 @@ nav .nav-right {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+}
+
+/* Иконка избранного. Располагается рядом с иконкой закрепа */
+.fav-icon {
+  position: absolute;
+  top: 8px;
+  right: 36px;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color .2s;
+}
+.fav-icon:hover {
+  color: var(--accent-2);
+}
+.fav-icon.fav-active {
+  color: var(--warning);
 }
 
 /* Анимация при наведении на карточку */

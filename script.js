@@ -24,6 +24,31 @@ function catLabel(v){
 }
 function statusLabel(v){ return ({verified:'Проверенный', seller:'Исполнитель', recruiter:'Рекрутер', unverified:'Не проверен', blocked:'Заблокирован'})[v] || 'Исполнитель'; }
 
+// Получить список избранных исполнителей текущего пользователя. Возвращает массив ID.
+function getFavorites(){
+  const s = getSession();
+  if(!s) return [];
+  const key = `sd_favorites_${s.u}`;
+  const favs = read(key, []);
+  return Array.isArray(favs) ? favs : [];
+}
+
+// Сохранить список избранных исполнителей для текущего пользователя
+function setFavorites(arr){
+  const s = getSession();
+  if(!s) return;
+  const key = `sd_favorites_${s.u}`;
+  write(key, Array.isArray(arr) ? arr : []);
+}
+
+// Посчитать средний рейтинг исполнителя. Если отзывов нет, возвращает 0.
+function avgRating(s){
+  const revs = Array.isArray(s.reviews) ? s.reviews : [];
+  if(revs.length === 0) return 0;
+  const sum = revs.reduce((a, r) => a + Number(r.rating || 0), 0);
+  return sum / revs.length;
+}
+
 // Словарь переводов интерфейса. Дополняйте при необходимости.
 const TRANSLATIONS = {
   ru: {
@@ -57,6 +82,7 @@ const TRANSLATIONS = {
     ads_card_ticker_title: '📢 Покупка бегущей строки',
     ads_card_ticker_desc: 'Ваш текст увидят все',
     how_heading_short: 'Как попасть'
+    , favorites_filter: 'Избранные'
   },
   en: {
     nav_home: 'Home',
@@ -89,6 +115,7 @@ const TRANSLATIONS = {
     ads_card_ticker_title: '📢 Purchase ticker',
     ads_card_ticker_desc: 'Your text will be seen by everyone',
     how_heading_short: 'How to join'
+    , favorites_filter: 'Favorites'
   }
 };
 
@@ -160,6 +187,12 @@ function applyLanguage(lang){
   if(howCtaP && tr.how_cta_text) howCtaP.textContent = tr.how_cta_text;
   const howCtaBtn = document.querySelector('#how-section a.btn');
   if(howCtaBtn && tr.how_cta_btn) howCtaBtn.textContent = tr.how_cta_btn;
+
+  // Локализация фильтра избранных исполнителей (пункт в списке статусов)
+  document.querySelectorAll('.fav-filter').forEach(el => {
+    // Текст зависит от языка. Используем переводы из словаря или fallback
+    el.textContent = tr.favorites_filter || ((lang === 'en') ? 'Favorites' : 'Избранные');
+  });
 }
 
 // Ключ для настроек и значения по умолчанию
@@ -338,12 +371,12 @@ function applySettings(){
   const logoImgEl = document.querySelector('.logo img');
   if(logoImgEl){
     if(st.logo && st.logo.src){ logoImgEl.src = st.logo.src; }
-    else { logoImgEl.src = 'assets/logo.svg'; }
+    else { logoImgEl.src = 'logo.svg'; }
   }
   const faviconEl = document.getElementById('favicon-tag');
   if(faviconEl){
     if(st.favicon && st.favicon.src){ faviconEl.href = st.favicon.src; }
-    else { faviconEl.href = 'assets/logo.svg'; }
+    else { faviconEl.href = 'logo.svg'; }
   }
   // Уведомление: обновляем текст в каждом уведомлении на странице
   const notifText = st.notification && typeof st.notification.text === 'string' && st.notification.text.trim() ? st.notification.text : DEFAULT_SETTINGS.notification.text;
@@ -473,6 +506,9 @@ function syncAuth(){
     navAdmin.hidden = s.role!=='admin';
     const navProfile = document.getElementById('nav-profile');
     if(navProfile) navProfile.style.display = '';
+    // Показываем фильтр «Избранные» только для авторизованных пользователей
+    const favFilter = document.querySelector('#flt .fav-filter');
+    if(favFilter) favFilter.style.display = '';
   }
   else {
     userBox.classList.add('hidden');
@@ -480,6 +516,9 @@ function syncAuth(){
     navAdmin.hidden = true;
     const navProfile = document.getElementById('nav-profile');
     if(navProfile) navProfile.style.display = 'none';
+    // Скрываем фильтр «Избранные» для неавторизованных пользователей
+    const favFilter = document.querySelector('#flt .fav-filter');
+    if(favFilter) favFilter.style.display = 'none';
   }
 }
 syncAuth();
@@ -506,12 +545,24 @@ function cardHTML(s){
   // Для закреплённых карточек отображаем значок галочки внутри звезды
   const badge = pinnedActive ? `<span class="pinned-badge" title="Закреп на правах рекламы"><img src="assets/pinned-check.svg" alt="закреп" style="width:16px;height:16px"></span>` : '';
   const ava = `<div class="avatar">${avaInner}${badge}</div>`;
-  // Список ресурсов выводится без ссылок, названия через запятую
-  // Сведения, используемые только для всплывающего профиля (но не отображаемые в списке)
+  // Иконка закрепа отображается сверху карточки, если закреп активен
   const pinIcon = pinnedActive ? `<span class="pin-icon" title="Закреп на правах рекламы">📌</span>` : '';
+  // Иконка избранного: отображаем звёздочку. При клике переключает состояние избранного для текущего пользователя.
+  let favIcon = '';
+  const favs = getFavorites();
+  const isFav = favs.includes(s.id);
+  // Показываем иконку избранного только если пользователь авторизован
+  if(getSession()){
+    favIcon = `<span class="fav-icon${isFav? ' fav-active' : ''}" data-fav-id="${s.id}" title="${isFav ? 'Убрать из избранного' : 'Добавить в избранное'}">${isFav ? '★' : '☆'}</span>`;
+  }
+  // Кнопка для связи в Telegram
   const tgBtn = s.tg ? `<a class="btn btn-primary btn-tg" href="https://t.me/${escapeHTML(s.tg.replace(/^@/,''))}" target="_blank" rel="noopener" data-stop="1">Написать</a>` : '';
+  // Рейтинг и количество отзывов
+  const avg = avgRating(s);
+  const reviewsCount = Array.isArray(s.reviews) ? s.reviews.length : 0;
+  const ratingDisplay = reviewsCount ? `<span class="rating">★ ${avg.toFixed(1)} (${reviewsCount})</span>` : '';
   return `<article class="card${pinnedActive?' pinned':''}" data-profile="${s.id}">
-      ${pinIcon}
+      ${pinIcon}${favIcon}
       <div class="card-head" style="display:flex;align-items:center;gap:12px;justify-content:space-between">
         ${ava}
         <div class="card-main" style="min-width:0;flex:1">
@@ -520,6 +571,7 @@ function cardHTML(s){
             <span class="chip status-${escapeHTML(s.status)}">${escapeHTML(statusLabel(s.status))}</span>
           </div>
           <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${escapeHTML(s.desc || '')}</div>
+          ${ratingDisplay ? `<div style="margin-top:4px">${ratingDisplay}</div>` : ''}
         </div>
         ${tgBtn}
       </div>
@@ -531,7 +583,14 @@ function renderCards(){
     // не отображаем заблокированных или находящихся на модерации исполнителей
     if(s.blocked) return false;
     if(s.pending) return false;
-    const statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
+    // Поддерживаем специальный фильтр "favorite" — показываем только избранные карточки
+    let statusOk;
+    if(currentFilter.status === 'favorite'){
+      const favs = getFavorites();
+      statusOk = favs.includes(s.id);
+    } else {
+      statusOk = currentFilter.status==='all' || s.status===currentFilter.status;
+    }
     const catOk = currentFilter.cat==='all' || s.cat===currentFilter.cat;
     // Фильтрация по текстовому поисковому запросу
     let searchOk = true;
@@ -570,6 +629,25 @@ document.querySelectorAll('#flt li').forEach(li=>{
 });
 document.querySelectorAll('#cats li').forEach(li=>{
   li.addEventListener('click',()=>{ document.querySelectorAll('#cats li').forEach(x=>x.classList.remove('active')); li.classList.add('active'); currentFilter.cat = li.dataset.cat; renderCards(); });
+});
+
+// Обработчик клика по иконке избранного на карточке. Используем делегирование события.
+document.addEventListener('click', (e)=>{
+  const favEl = e.target.closest('.fav-icon');
+  if(favEl){
+    e.stopPropagation();
+    const id = parseInt(favEl.getAttribute('data-fav-id'), 10);
+    if(isNaN(id)) return;
+    let favs = getFavorites();
+    if(favs.includes(id)){
+      favs = favs.filter(x => x !== id);
+    } else {
+      favs = favs.concat([id]);
+    }
+    setFavorites(favs);
+    // при переключении избранного перерисовываем список и не меняем активную карточку
+    renderCards();
+  }
 });
 
 const cardModal = document.getElementById('card-modal');
@@ -1426,6 +1504,37 @@ function openSeller(id){
       ${s.flags?.rating4?'<span class="chip">4★+</span>':''}`;
   // Список ресурсов без ссылок: выводим как чипы без якоря
   const forumList = Array.isArray(s.forums)&&s.forums.length ? `<div style='margin-top:8px'>${s.forums.map(it=>`<span class="link-chip">🔗 ${escapeHTML(it.title||'Ссылка')}</span>`).join(' ')}</div>` : '';
+  // Формируем список отзывов и форму для добавления нового отзыва
+  const reviews = Array.isArray(s.reviews) ? s.reviews : [];
+  let reviewsHTML = '';
+  if(reviews.length){
+    reviewsHTML = reviews.map(r => {
+      const starsFull = '★'.repeat(Math.max(1, Math.min(5, parseInt(r.rating||0,10))));
+      const starsEmpty = '☆'.repeat(5 - starsFull.length);
+      return `<div class='review'><span class='stars'>${starsFull}${starsEmpty}</span> <b>${escapeHTML(r.user)}</b>: ${escapeHTML(r.comment||'')}</div>`;
+    }).join('');
+  } else {
+    reviewsHTML = `<p class="muted">Отзывов пока нет</p>`;
+  }
+  const sessionUser = getSession();
+  const canReview = sessionUser && sessionUser.u !== s.nick;
+  const reviewFormHTML = canReview ? `
+    <div class='review-form' style='margin-top:12px'>
+      <h4>Оставить отзыв</h4>
+      <label>Оценка</label>
+      <select class='field' id='review-rating'>
+        <option value='5'>5</option>
+        <option value='4'>4</option>
+        <option value='3'>3</option>
+        <option value='2'>2</option>
+        <option value='1'>1</option>
+      </select>
+      <label>Комментарий</label>
+      <textarea class='field' id='review-comment' rows='2' placeholder='Ваш отзыв...'></textarea>
+      <button class='btn btn-primary' id='review-submit'>Отправить</button>
+      <div id='review-error' class='muted' style='color:#f87171;margin-top:4px'></div>
+    </div>
+  ` : '';
   m.innerHTML = `
     <div class='panel'>
       <div class='panel-head'><b>${escapeHTML(s.name)}</b><button class='x' data-close>×</button></div>
@@ -1442,6 +1551,12 @@ function openSeller(id){
             <p class='muted' style='margin:4px 0'><span style='margin-right:4px'>✈️</span><b>Телеграм:</b> ${s.tg ? escapeHTML(s.tg) : '—'}</p>
             ${forumList}
             ${s.tg ? `<div style='margin-top:12px'><a class="btn btn-primary" href="https://t.me/${escapeHTML(String(s.tg).replace(/^@/,''))}" target="_blank" rel="noopener">Написать в Telegram</a></div>` : ''}
+            <!-- Отзывы и форма -->
+            <div style='margin-top:16px'>
+              <h4>Отзывы (${reviews.length})</h4>
+              ${reviewsHTML}
+              ${reviewFormHTML}
+            </div>
           </div>
         </div>
       </div>
